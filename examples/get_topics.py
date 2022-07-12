@@ -1,3 +1,5 @@
+import os
+
 from drift_client import DriftClient
 
 import logging
@@ -10,7 +12,7 @@ def main():
     # Timeseries example
 
     # Init
-    drift_client = DriftClient("10.0.0.153")
+    drift_client = DriftClient("10.0.0.153", os.getenv("DRIFT_PASSWORD"))
 
     # Download historic data
     topics = drift_client.get_topics()

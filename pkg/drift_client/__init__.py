@@ -2,6 +2,7 @@
 """
 
 from drift_client.drift_client import DriftClient
+from drift_client.package import Package
 
 
 def _load_version() -> str:

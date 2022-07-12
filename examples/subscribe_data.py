@@ -1,3 +1,5 @@
+import os
+
 from drift_client import DriftClient
 
 import logging
@@ -9,7 +11,8 @@ logging.basicConfig(level=logging.DEBUG)
 
 def main():
     # Init
-    drift_client = DriftClient("10.0.0.153")
+    drift_client = DriftClient("10.0.0.153", os.getenv("DRIFT_PASSWORD"))
+
     # for output format of 'wb' or 'raw'
     def package_handler(package):
         print(
