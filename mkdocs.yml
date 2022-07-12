@@ -3,7 +3,8 @@ docs_dir: .
 nav:
   - Home: README.md
   - API Reference:
-      - Client: docs/api/client.md
+      - DriftClient: docs/api/drift_client.md
+      - Package: docs/api/package.md
 
 
 repo_name: reduct-storage/reduct-py

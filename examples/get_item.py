@@ -1,3 +1,5 @@
+import os
+
 from drift_client import DriftClient
 
 import logging
@@ -9,7 +11,7 @@ logging.basicConfig(level=logging.INFO)
 
 def main():
     # Init
-    drift_client = DriftClient("10.0.0.153")
+    drift_client = DriftClient("10.0.0.153", os.getenv("DRIFT_PASSWORD"))
 
     # Download single package
     package = drift_client.get_item("acc-5/1648457411593.dp")

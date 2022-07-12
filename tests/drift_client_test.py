@@ -17,9 +17,7 @@ def test__default_initialization(minio_klass, influxdb_klass):
     """should initialize clients with default settings"""
     _ = DriftClient("host_name", "password")
 
-    minio_klass.assert_called_with(
-        "http://host_name:9000", "panda", "password", False
-    )
+    minio_klass.assert_called_with("http://host_name:9000", "panda", "password", False)
     influxdb_klass.assert_called_with(
         "http://host_name:8086", "panda", "password", False
     )
