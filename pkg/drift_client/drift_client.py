@@ -10,7 +10,7 @@ from typing import Dict, List, Callable
 
 from google.protobuf.message import DecodeError
 
-from drift_client import Package
+from drift_client.package import Package
 from drift_client.influxdb_client import InfluxDBClient
 from drift_client.minio_client import MinIOClient
 from drift_client.mqtt_client import MQTTClient
@@ -82,7 +82,8 @@ class DriftClient:
 
         Args:
             topics: List of topic names, e.g. `["sensor-1", "sensor-2"]`
-            timeframe: List with begin and end of request timeframe, Format: `2022-02-07 10:00:00`
+            timeframe: List with begin and end of request timeframe,
+                Format: `2022-02-07 10:00:00`
 
         Returns:
             List of item names available
@@ -90,8 +91,10 @@ class DriftClient:
 
         Examples:
             >>> client = DriftClient("127.0.0.1", "PASSWORD")
-            >>> client.get_list(["topic-1", "topic-2", "topic-3"], ["2022-02-03 10:00:00", "2022-02-03 10:00:10"])
-            >>>     # => {"topic-1": ['topic-1/1644750600291.dp', 'topic-1/1644750601291.dp', ...] ... }
+            >>> client.get_list(["topic-1", "topic-2", "topic-3"],
+            >>>         ["2022-02-03 10:00:00", "2022-02-03 10:00:10"])
+            >>> # => {"topic-1": ['topic-1/1644750600291.dp',
+            >>> #                  'topic-1/1644750601291.dp', ...] ... }
         """
         to_request = self.__influx_client.query_data(topics, timeframe[0], timeframe[1])
 

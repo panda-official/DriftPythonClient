@@ -1,3 +1,4 @@
+"""Wrapper around DriftPackage"""
 from typing import Optional
 
 from wavelet_buffer import WaveletBuffer  # pylint: disable=no-name-in-module
