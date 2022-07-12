@@ -10,7 +10,7 @@ from wavelet_buffer import (  # pylint: disable=no-name-in-module
 from drift_protocol.common import DriftPackage, StatusCode, DataPayload
 from google.protobuf.any_pb2 import Any
 
-from drift_client import Package
+from drift_client import DriftDataPackage
 
 
 @pytest.fixture(name="signal")
@@ -52,7 +52,7 @@ def _make_good_package(buffer: WaveletBuffer) -> DriftPackage:
 
 def test__package_parsing(good_package, buffer, signal):
     """Should parse a package in a constructor"""
-    pkg = Package(good_package.SerializeToString())
+    pkg = DriftDataPackage(good_package.SerializeToString())
 
     assert pkg.package_id == good_package.id
     assert pkg.status_code == StatusCode.GOOD

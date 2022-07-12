@@ -10,7 +10,7 @@ from typing import Dict, List, Callable
 
 from google.protobuf.message import DecodeError
 
-from drift_client.package import Package
+from drift_client.drift_data_package import DriftDataPackage
 from drift_client.influxdb_client import InfluxDBClient
 from drift_client.minio_client import MinIOClient
 from drift_client.mqtt_client import MQTTClient
@@ -111,7 +111,7 @@ class DriftClient:
 
         return data
 
-    def get_item(self, path: str) -> Package:
+    def get_item(self, path: str) -> DriftDataPackage:
         """Returns requested single historic data from initialised Device
         Args:
             path: path of item in storage
@@ -125,9 +125,9 @@ class DriftClient:
             >>> client.get_item("topic-1/1644750605291.dp")
         """
         blob = self.__minio_client.fetch_data(path)
-        return Package(blob)
+        return DriftDataPackage(blob)
 
-    def subscribe_data(self, topic: str, handler: Callable[[Package], None]):
+    def subscribe_data(self, topic: str, handler: Callable[[DriftDataPackage], None]):
         """Subscribes to selected topic from initialised Device
 
         Args:
@@ -136,7 +136,7 @@ class DriftClient:
                 `def package_handler(package):`
 
         Examples:
-            >>> def package_handler(package: Package) -> None:
+            >>> def package_handler(package: DriftDataPackage) -> None:
             >>>    print(package.meta)
             >>>
             >>> client = DriftClient("127.0.0.1", "PASSWORD")
@@ -145,7 +145,7 @@ class DriftClient:
 
         def package_handler(message):
             try:
-                output = Package(message.payload)
+                output = DriftDataPackage(message.payload)
             except DecodeError as exc:
                 raise DecodeError("Payload is no Drift Package") from exc
             handler(output)

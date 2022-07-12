@@ -18,8 +18,8 @@ def check_status(func):
     return dec
 
 
-class Package:  # pylint: disable=no-member
-    """Parsed Drift Package Class"""
+class DriftDataPackage:  # pylint: disable=no-member
+    """Parsed Drift Package with data payload"""
 
     _pkg: DriftPackage
 
