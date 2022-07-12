@@ -1,0 +1,22 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+
+# Environments
+.venv/
+
+# sphinx build folder
+doc/build
+
+# OS generated files
+.DS_Store?
+
+# setup
+pkg/drift_client/VERSION
+
+# vscode
+.vscode
