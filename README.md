@@ -32,5 +32,4 @@ for topic in packages:
     for path in packages[topic]:
         data = drift_client.get_item(path).as_np(scale_factor=2)
         print(data)
-
 ```
