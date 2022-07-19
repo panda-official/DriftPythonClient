@@ -1,7 +1,7 @@
 """ Simple InfluxDB client
 """
 
-from typing import List
+from typing import List, Tuple, Any
 from datetime import datetime
 
 from urllib.parse import urlparse
@@ -47,8 +47,6 @@ class InfluxDBClient:
         :return: List of measurements
         :rtype: List[str]
         """
-        response = None
-        data = []
         response = self.__query_api.query(
             f"""\
             import \"influxdata/influxdb/schema\"
@@ -57,6 +55,7 @@ class InfluxDBClient:
             """
         )
 
+        data = []
         for table in response:
             for record in table.records:
                 data.append(record.get_value())
@@ -65,24 +64,12 @@ class InfluxDBClient:
 
     def query_data(
         self,
-        measurements: List[str],
+        measurement: str,
         start: str,
         stop: str,
         field: str = "src",
-    ) -> List[str]:
-        """InfluxDB query for values
-
-        :param measurements: List of InfluxDB measurement names
-        :type measurements: List[str]
-        :param start: Range start in format %Y-%m-%d %H:%M:%S
-        :type start: str
-        :param stop: Range stop in format %Y-%m-%d %H:%M:%S
-        :type stop: str
-        :param field: InfluxDB field name, defaults to "_src"
-        :type field: str, optional
-        :return: List of values according to measurement and field filter
-        :rtype: List[str]
-        """
+    ) -> List[Tuple[float, str]]:
+        """InfluxDB queries for values"""
         # Change time format for request
         start = datetime.strptime(start, self.__input_time_fmt).strftime(
             self.__output_time_fmt
@@ -91,25 +78,22 @@ class InfluxDBClient:
             self.__output_time_fmt
         )
 
-        # For only matching exact topic names from measurements list
-        # pylint: disable=consider-using-f-string
-        measurements_regex = "(?:{})".format(
-            "|".join(["^{}\\b".format(x) for x in measurements])
-        )
-
-        response = self.__query_api.query(
-            f'\
+        query = f'\
             from(bucket:"{self.__bucket}")\
             |> range(start:{start}, stop: {stop})\
-            |> filter(fn: (r) => r._measurement =~ /{measurements_regex}/\
+            |> filter(fn: (r) => r._measurement == "{measurement}"\
                 and r._field =~ /{field}/)\
-            |> keep(columns: ["_value"])\
             '
-        )
+        response = self.__query_api.query(query)
 
         data = []
         for table in response:
             for record in table.records:
-                data.append(record.get_value())
+                data.append(
+                    (
+                        record.get_time().timestamp(),
+                        record.get_value(),
+                    )
+                )
 
         return data

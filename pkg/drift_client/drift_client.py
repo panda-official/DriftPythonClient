@@ -96,18 +96,19 @@ class DriftClient:
             >>> # => {"topic-1": ['topic-1/1644750600291.dp',
             >>> #                  'topic-1/1644750601291.dp', ...] ... }
         """
-        to_request = self.__influx_client.query_data(topics, timeframe[0], timeframe[1])
-
         data = {}
-
-        if not to_request:
-            return data
-
         for topic in topics:
+            to_request = self.__influx_client.query_data(
+                topic, timeframe[0], timeframe[1], field="status"
+            )
+
+            if not to_request:
+                break
+
             data[topic] = []
 
-        for file in to_request:
-            data[file.split("/")[0]].append(file)
+            for timestamp, value in to_request:
+                data[topic].append(f"{topic}/{int(timestamp * 1000)}.dp")
 
         return data
 
