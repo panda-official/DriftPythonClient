@@ -105,6 +105,7 @@ class DriftClient:
             if not influxdb_values:
                 break
 
+            data[topic] = []
             for timestamp, _ in influxdb_values:
                 data[topic].append(f"{topic}/{int(timestamp * 1000)}.dp")
 
