@@ -98,16 +98,14 @@ class DriftClient:
         """
         data = {}
         for topic in topics:
-            to_request = self.__influx_client.query_data(
+            influxdb_values = self.__influx_client.query_data(
                 topic, timeframe[0], timeframe[1], field="status"
             )
 
-            if not to_request:
+            if not influxdb_values:
                 break
 
-            data[topic] = []
-
-            for timestamp, _ in to_request:
+            for timestamp, _ in influxdb_values:
                 data[topic].append(f"{topic}/{int(timestamp * 1000)}.dp")
 
         return data
