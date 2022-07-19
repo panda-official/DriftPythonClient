@@ -107,7 +107,7 @@ class DriftClient:
 
             data[topic] = []
 
-            for timestamp, value in to_request:
+            for timestamp, _ in to_request:
                 data[topic].append(f"{topic}/{int(timestamp * 1000)}.dp")
 
         return data

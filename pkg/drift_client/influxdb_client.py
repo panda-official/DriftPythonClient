@@ -3,8 +3,8 @@
 
 from typing import List, Tuple, Any
 from datetime import datetime
-
 from urllib.parse import urlparse
+
 from influxdb_client import InfluxDBClient as Client
 
 
@@ -68,7 +68,7 @@ class InfluxDBClient:
         start: str,
         stop: str,
         field: str = "src",
-    ) -> List[Tuple[float, str]]:
+    ) -> List[Tuple[float, Any]]:
         """InfluxDB queries for values"""
         # Change time format for request
         start = datetime.strptime(start, self.__input_time_fmt).strftime(
