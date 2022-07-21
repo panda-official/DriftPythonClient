@@ -1,1 +1,1 @@
-::: drift_client.Package
+::: drift_client.DriftDataPackage
