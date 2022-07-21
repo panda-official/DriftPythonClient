@@ -7,7 +7,7 @@ nav:
       - Package: docs/api/package.md
 
 
-repo_name: reduct-storage/reduct-py
+repo_name: panda-official/DriftPythonClient
 repo_url: https://github.com/panda-official/DriftPythonClient
 edit_uri: edit/main/docs
 
@@ -74,4 +74,3 @@ plugins:
           selection:
             docstring_style: google
   - autorefs
-
