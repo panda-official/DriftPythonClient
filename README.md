@@ -10,7 +10,13 @@ infrastructure.
 ## Installing
 
 ```
-pip install https://github.com/panda-official/DriftPythonClient.git
+pip install drift-python-client
+```
+
+If you need the latest version from GitHub:
+
+```
+pip install git+https://github.com/panda-official/DriftPythonClient.git
 ```
 
 ## Usage Example
