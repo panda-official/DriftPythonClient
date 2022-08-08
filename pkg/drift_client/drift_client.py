@@ -8,6 +8,7 @@ import time
 import logging
 from typing import Dict, List, Callable
 from datetime import datetime
+from deprecated import deprecated
 
 from google.protobuf.message import DecodeError
 
@@ -78,6 +79,7 @@ class DriftClient:
         topics = self.__influx_client.query_measurements()
         return topics
 
+    @deprecated(version='1.0.0', reason="Deprecated")
     def get_list(self, topics: List[str], timeframe: List[str]) -> Dict[str, List[str]]:
         """Returns list of history data from initialised Device
 
@@ -134,7 +136,7 @@ class DriftClient:
             >>> #                  'topic-1/1644750601291.dp', ...] ... }
         """
         try:
-            return self._get_topic_data(self, topics,
+            return self._get_topic_data(topics,
                                         start.strftime("%Y-%m-%d %H:%M:%S"),
                                         stop.strftime("%Y-%m-%d %H:%M:%S"))
         except Exception:
@@ -143,14 +145,14 @@ class DriftClient:
         try:
             start_iso = datetime.fromisoformat(start).strftime("%Y-%m-%d %H:%M:%S")
             stop_iso = datetime.fromisoformat(stop).strftime("%Y-%m-%d %H:%M:%S")
-            return self._get_topic_data(self, topics, start_iso, stop_iso)
+            return self._get_topic_data(topics, start_iso, stop_iso)
         except Exception:
             pass
 
         try:
             start_iso = datetime.fromtimestamp(start).strftime("%Y-%m-%d %H:%M:%S")
             stop_iso = datetime.fromtimestamp(stop).strftime("%Y-%m-%d %H:%M:%S")
-            return self._get_topic_data(self, topics, start_iso, stop_iso)
+            return self._get_topic_data(topics, start_iso, stop_iso)
         except Exception:
             pass
 

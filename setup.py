@@ -56,6 +56,7 @@ setup(
         "wavelet-buffer~=0.1.0",
         "paho-mqtt==1.6.1",
         "numpy==1.23.1",
+        "Deprecated==1.2.13"
     ],
     extras_require={
         "test": ["pytest==7.1.2", "pytest-mock==3.8.2"],

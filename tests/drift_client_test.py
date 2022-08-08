@@ -3,7 +3,6 @@ import pytest
 from datetime import datetime
 from drift_client import DriftClient
 
-
 @pytest.fixture(name="minio_klass")
 def _mock_minio_class(mocker):
     return mocker.patch("drift_client.drift_client.MinIOClient")
@@ -55,6 +54,20 @@ def test__get_topic_data(influxdb_client):
     start = datetime.strptime("2022-01-01 00:00:00", "%Y-%m-%d %H:%M:%S")
     stop = datetime.strptime("2022-01-01 00:00:00", "%Y-%m-%d %H:%M:%S")
     data = client.get_topic_data(["topic"], start, stop)
+    assert data == {"topic": ["topic/10000000.dp", "topic/10010000.dp"]}
+
+    influxdb_client.query_data.assert_called_with(
+        "topic", "2022-01-01 00:00:00", "2022-01-01 00:00:00", field="status"
+    )
+
+    data = client.get_topic_data(["topic"], start.isoformat(), stop.isoformat())
+    assert data == {"topic": ["topic/10000000.dp", "topic/10010000.dp"]}
+
+    influxdb_client.query_data.assert_called_with(
+        "topic", "2022-01-01 00:00:00", "2022-01-01 00:00:00", field="status"
+    )
+
+    data = client.get_topic_data(["topic"], start.timestamp(), stop.timestamp())
     assert data == {"topic": ["topic/10000000.dp", "topic/10010000.dp"]}
 
     influxdb_client.query_data.assert_called_with(
