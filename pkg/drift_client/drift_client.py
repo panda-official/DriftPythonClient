@@ -7,6 +7,7 @@ Drift Client Module for easy access to Compute Devices on the Drift Platform
 import time
 import logging
 from typing import Dict, List, Callable
+from datetime import datetime
 
 from google.protobuf.message import DecodeError
 
@@ -111,6 +112,51 @@ class DriftClient:
 
         return data
 
+    def get_topic_data(self, topics: List[str], start, stop) -> Dict[str, List[str]]:
+        """Returns list of history data from initialised Device
+
+        Args:
+            topics: List of topic names, e.g. `["sensor-1", "sensor-2"]`
+            start: Begin of request timeframe,
+                Format: ISO string, datetime or float timestamp
+            stop: End of request timeframe,
+                Format: ISO string, datetime or float timestamp
+
+        Returns:
+            Dict with topics and item names available
+        :rtype: Dict[str, List[str]]
+
+        Examples:
+            >>> client = DriftClient("127.0.0.1", "PASSWORD")
+            >>> client.get_topic_data(["topic-1", "topic-2", "topic-3"],
+            >>>         "2022-02-03 10:00:00", "2022-02-03 10:00:10")
+            >>> # => {"topic-1": ['topic-1/1644750600291.dp',
+            >>> #                  'topic-1/1644750601291.dp', ...] ... }
+        """
+        try:
+            return self._get_topic_data(self, topics,
+                                        start.strftime("%Y-%m-%d %H:%M:%S"),
+                                        stop.strftime("%Y-%m-%d %H:%M:%S"))
+        except Exception:
+            pass
+
+        try:
+            start_iso = datetime.fromisoformat(start).strftime("%Y-%m-%d %H:%M:%S")
+            stop_iso = datetime.fromisoformat(stop).strftime("%Y-%m-%d %H:%M:%S")
+            return self._get_topic_data(self, topics, start_iso, stop_iso)
+        except Exception:
+            pass
+
+        try:
+            start_iso = datetime.fromtimestamp(start).strftime("%Y-%m-%d %H:%M:%S")
+            stop_iso = datetime.fromtimestamp(stop).strftime("%Y-%m-%d %H:%M:%S")
+            return self._get_topic_data(self, topics, start_iso, stop_iso)
+        except Exception:
+            pass
+
+        logger.warning("Wrong timestamp format")
+        return {}
+
     def get_item(self, path: str) -> DriftDataPackage:
         """Returns requested single historic data from initialised Device
         Args:
@@ -170,3 +216,32 @@ class DriftClient:
             self.__mqtt_client.loop_start()
 
         self.__mqtt_client.publish(topic, payload)
+
+    def _get_topic_data(self, topics: List[str], start: str, stop: str) -> Dict[str, List[str]]:
+        """Returns list of history data from initialised Device
+
+        Args:
+            topics: List of topic names, e.g. `["sensor-1", "sensor-2"]`
+            start: Begin of request timeframe,
+                Format: `2022-02-07 10:00:00`
+            stop: End of request timeframe,
+                Format: `2022-02-07 10:00:00`
+
+        Returns:
+            Dict with topics and item names available
+        :rtype: Dict[str, List[str]]
+        """
+        data = {}
+        for topic in topics:
+            influxdb_values = self.__influx_client.query_data(
+                topic, start, stop, field="status"
+            )
+
+            if not influxdb_values:
+                break
+
+            data[topic] = []
+            for timestamp, _ in influxdb_values:
+                data[topic].append(f"{topic}/{int(timestamp * 1000)}.dp")
+
+        return data
