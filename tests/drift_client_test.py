@@ -1,7 +1,8 @@
 """Tests for DriftClient"""
-import pytest
 from datetime import datetime
+import pytest
 from drift_client import DriftClient
+
 
 @pytest.fixture(name="minio_klass")
 def _mock_minio_class(mocker):
@@ -43,6 +44,7 @@ def test__timestamp_from_influxdb(influxdb_client):
     influxdb_client.query_data.assert_called_with(
         "topic", "2022-01-01 00:00:00", "2022-01-01 00:00:00", field="status"
     )
+
 
 @pytest.mark.usefixtures("minio_klass")
 def test__get_topic_data(influxdb_client):

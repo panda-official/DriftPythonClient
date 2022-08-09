@@ -79,7 +79,7 @@ class DriftClient:
         topics = self.__influx_client.query_measurements()
         return topics
 
-    @deprecated(version='1.0.0', reason="Deprecated")
+    @deprecated(version="1.0.0", reason="Deprecated")
     def get_list(self, topics: List[str], timeframe: List[str]) -> Dict[str, List[str]]:
         """Returns list of history data from initialised Device
 
@@ -136,24 +136,26 @@ class DriftClient:
             >>> #                  'topic-1/1644750601291.dp', ...] ... }
         """
         try:
-            return self._get_topic_data(topics,
-                                        start.strftime("%Y-%m-%d %H:%M:%S"),
-                                        stop.strftime("%Y-%m-%d %H:%M:%S"))
-        except Exception:
+            return self._get_topic_data(
+                topics,
+                start.strftime("%Y-%m-%d %H:%M:%S"),
+                stop.strftime("%Y-%m-%d %H:%M:%S"),
+            )
+        except (TypeError, AttributeError):
             pass
 
         try:
             start_iso = datetime.fromisoformat(start).strftime("%Y-%m-%d %H:%M:%S")
             stop_iso = datetime.fromisoformat(stop).strftime("%Y-%m-%d %H:%M:%S")
             return self._get_topic_data(topics, start_iso, stop_iso)
-        except Exception:
+        except (TypeError, AttributeError):
             pass
 
         try:
             start_iso = datetime.fromtimestamp(start).strftime("%Y-%m-%d %H:%M:%S")
             stop_iso = datetime.fromtimestamp(stop).strftime("%Y-%m-%d %H:%M:%S")
             return self._get_topic_data(topics, start_iso, stop_iso)
-        except Exception:
+        except (TypeError, AttributeError):
             pass
 
         logger.warning("Wrong timestamp format")
@@ -219,7 +221,9 @@ class DriftClient:
 
         self.__mqtt_client.publish(topic, payload)
 
-    def _get_topic_data(self, topics: List[str], start: str, stop: str) -> Dict[str, List[str]]:
+    def _get_topic_data(
+        self, topics: List[str], start: str, stop: str
+    ) -> Dict[str, List[str]]:
         """Returns list of history data from initialised Device
 
         Args:
