@@ -118,7 +118,7 @@ class DriftClient:
 
         return data
 
-    def get_topic_data(
+    def get_package_names(
         self,
         topic: str,
         start: Union[float, datetime, str],
@@ -139,7 +139,7 @@ class DriftClient:
 
         Examples:
             >>> client = DriftClient("127.0.0.1", "PASSWORD")
-            >>> client.get_topic_data("topic-1",
+            >>> client.get_package_names("topic-1",
             >>>         "2022-02-03 10:00:00", "2022-02-03 10:00:10")
             >>> # => ['topic-1/1644750600291.dp',
             >>> #                  'topic-1/1644750601291.dp', ...]

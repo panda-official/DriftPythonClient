@@ -13,7 +13,7 @@ def main():
     # Init
     drift_client = DriftClient("drift-test-rig.local", os.getenv("DRIFT_PASSWORD"))
     # Download list of history
-    packages = drift_client.get_topic_data(
+    packages = drift_client.get_package_names(
         "acc-1",
         start=datetime.datetime.utcnow() - datetime.timedelta(minutes=1),
         stop=datetime.datetime.utcnow(),

@@ -65,7 +65,7 @@ def test__get_topic_data(influxdb_client, start_ts, stop_ts):
     client = DriftClient("host_name", "password")
     influxdb_client.query_data.return_value = [(10000.0, 0), (10010.0, 512)]
 
-    data = client.get_topic_data("topic", start_ts, stop_ts)
+    data = client.get_package_names("topic", start_ts, stop_ts)
     assert data == ["topic/10000000.dp", "topic/10010000.dp"]
 
     influxdb_client.query_data.assert_called_with(
