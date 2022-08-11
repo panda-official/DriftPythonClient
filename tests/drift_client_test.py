@@ -46,31 +46,27 @@ def test__timestamp_from_influxdb(influxdb_client):
     )
 
 
+start = datetime.strptime("2022-01-01 00:00:00", "%Y-%m-%d %H:%M:%S")
+stop = datetime.strptime("2022-01-01 00:00:00", "%Y-%m-%d %H:%M:%S")
+
+
 @pytest.mark.usefixtures("minio_klass")
-def test__get_topic_data(influxdb_client):
+@pytest.mark.parametrize(
+    "start_ts, stop_ts",
+    [
+        (start, stop),
+        (start.isoformat(), stop.isoformat()),
+        (start.timestamp(), stop.timestamp()),
+    ],
+)
+def test__get_topic_data(influxdb_client, start_ts, stop_ts):
     """should get timestamp and values for records using start and stop timestamps
     from influxdb and make paths in minio"""
     client = DriftClient("host_name", "password")
     influxdb_client.query_data.return_value = [(10000.0, 0), (10010.0, 512)]
 
-    start = datetime.strptime("2022-01-01 00:00:00", "%Y-%m-%d %H:%M:%S")
-    stop = datetime.strptime("2022-01-01 00:00:00", "%Y-%m-%d %H:%M:%S")
-    data = client.get_topic_data(["topic"], start, stop)
-    assert data == {"topic": ["topic/10000000.dp", "topic/10010000.dp"]}
-
-    influxdb_client.query_data.assert_called_with(
-        "topic", "2022-01-01 00:00:00", "2022-01-01 00:00:00", field="status"
-    )
-
-    data = client.get_topic_data(["topic"], start.isoformat(), stop.isoformat())
-    assert data == {"topic": ["topic/10000000.dp", "topic/10010000.dp"]}
-
-    influxdb_client.query_data.assert_called_with(
-        "topic", "2022-01-01 00:00:00", "2022-01-01 00:00:00", field="status"
-    )
-
-    data = client.get_topic_data(["topic"], start.timestamp(), stop.timestamp())
-    assert data == {"topic": ["topic/10000000.dp", "topic/10010000.dp"]}
+    data = client.get_topic_data("topic", start_ts, stop_ts)
+    assert data == ["topic/10000000.dp", "topic/10010000.dp"]
 
     influxdb_client.query_data.assert_called_with(
         "topic", "2022-01-01 00:00:00", "2022-01-01 00:00:00", field="status"
