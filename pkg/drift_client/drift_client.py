@@ -20,6 +20,16 @@ from drift_client.mqtt_client import MQTTClient
 logger = logging.getLogger("drift-client")
 
 
+def _convert_type(timestamp: Union[float, datetime, str]) -> str:
+    if isinstance(timestamp, str):
+        return datetime.fromisoformat(timestamp).strftime("%Y-%m-%d %H:%M:%S")
+    if isinstance(timestamp, float):
+        return datetime.fromtimestamp(timestamp).strftime("%Y-%m-%d %H:%M:%S")
+    if isinstance(timestamp, datetime):
+        return timestamp.strftime("%Y-%m-%d %H:%M:%S")
+    raise TypeError("Timestamp must be str, float or datetime")
+
+
 class DriftClient:
     """Drift Python Client Class"""
 
@@ -144,9 +154,19 @@ class DriftClient:
             >>> # => ['topic-1/1644750600291.dp',
             >>> #                  'topic-1/1644750601291.dp', ...]
         """
-        return self._get_topic_data(
-            topic, self._convert_type(start), self._convert_type(stop)
+        start = _convert_type(start)
+        stop = _convert_type(stop)
+
+        data = []
+        influxdb_values = self.__influx_client.query_data(
+            topic, start, stop, field="status"
         )
+
+        if influxdb_values:
+            for timestamp, _ in influxdb_values:
+                data.append(f"{topic}/{int(timestamp * 1000)}.dp")
+
+        return data
 
     def get_item(self, path: str) -> DriftDataPackage:
         """Returns requested single historic data from initialised Device
@@ -207,37 +227,3 @@ class DriftClient:
             self.__mqtt_client.loop_start()
 
         self.__mqtt_client.publish(topic, payload)
-
-    def _convert_type(self, timestamp: Union[float, datetime, str]) -> str:
-        if isinstance(timestamp, str):
-            return datetime.fromisoformat(timestamp).strftime("%Y-%m-%d %H:%M:%S")
-        if isinstance(timestamp, float):
-            return datetime.fromtimestamp(timestamp).strftime("%Y-%m-%d %H:%M:%S")
-        if isinstance(timestamp, datetime):
-            return timestamp.strftime("%Y-%m-%d %H:%M:%S")
-        raise TypeError("Timestamp must be str, float or datetime")
-
-    def _get_topic_data(self, topic: str, start: str, stop: str) -> List[str]:
-        """Returns list of history data from initialised Device
-
-        Args:
-            topics: Topic name, e.g. `"sensor-1"`
-            start: Begin of request timeframe,
-                Format: `2022-02-07 10:00:00`
-            stop: End of request timeframe,
-                Format: `2022-02-07 10:00:00`
-
-        Returns:
-            List with item names available
-        :rtype: List[str]
-        """
-        data = []
-        influxdb_values = self.__influx_client.query_data(
-            topic, start, stop, field="status"
-        )
-
-        if influxdb_values:
-            for timestamp, _ in influxdb_values:
-                data.append(f"{topic}/{int(timestamp * 1000)}.dp")
-
-        return data
