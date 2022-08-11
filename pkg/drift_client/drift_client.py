@@ -6,7 +6,9 @@ Drift Client Module for easy access to Compute Devices on the Drift Platform
 
 import time
 import logging
-from typing import Dict, List, Callable
+from typing import Dict, List, Callable, Union
+from datetime import datetime
+import deprecation
 
 from google.protobuf.message import DecodeError
 
@@ -77,6 +79,11 @@ class DriftClient:
         topics = self.__influx_client.query_measurements()
         return topics
 
+    @deprecation.deprecated(
+        deprecated_in="0.2.0",
+        removed_in="1.0.0",
+        details="use drift_client.get_topic_data method instead",
+    )
     def get_list(self, topics: List[str], timeframe: List[str]) -> Dict[str, List[str]]:
         """Returns list of history data from initialised Device
 
@@ -110,6 +117,36 @@ class DriftClient:
                 data[topic].append(f"{topic}/{int(timestamp * 1000)}.dp")
 
         return data
+
+    def get_topic_data(
+        self,
+        topic: str,
+        start: Union[float, datetime, str],
+        stop: Union[float, datetime, str],
+    ) -> List[str]:
+        """Returns list of history data from initialised Device
+
+        Args:
+            topics: List of topic names, e.g. `["sensor-1", "sensor-2"]`
+            start: Begin of request timeframe,
+                Format: ISO string, datetime or float timestamp
+            stop: End of request timeframe,
+                Format: ISO string, datetime or float timestamp
+
+        Returns:
+            List with item names available
+        :rtype: List[str]
+
+        Examples:
+            >>> client = DriftClient("127.0.0.1", "PASSWORD")
+            >>> client.get_topic_data("topic-1",
+            >>>         "2022-02-03 10:00:00", "2022-02-03 10:00:10")
+            >>> # => ['topic-1/1644750600291.dp',
+            >>> #                  'topic-1/1644750601291.dp', ...]
+        """
+        return self._get_topic_data(
+            topic, self._convert_type(start), self._convert_type(stop)
+        )
 
     def get_item(self, path: str) -> DriftDataPackage:
         """Returns requested single historic data from initialised Device
@@ -170,3 +207,37 @@ class DriftClient:
             self.__mqtt_client.loop_start()
 
         self.__mqtt_client.publish(topic, payload)
+
+    def _convert_type(self, timestamp: Union[float, datetime, str]) -> str:
+        if isinstance(timestamp, str):
+            return datetime.fromisoformat(timestamp).strftime("%Y-%m-%d %H:%M:%S")
+        if isinstance(timestamp, float):
+            return datetime.fromtimestamp(timestamp).strftime("%Y-%m-%d %H:%M:%S")
+        if isinstance(timestamp, datetime):
+            return timestamp.strftime("%Y-%m-%d %H:%M:%S")
+        raise TypeError("Timestamp must be str, float or datetime")
+
+    def _get_topic_data(self, topic: str, start: str, stop: str) -> List[str]:
+        """Returns list of history data from initialised Device
+
+        Args:
+            topics: Topic name, e.g. `"sensor-1"`
+            start: Begin of request timeframe,
+                Format: `2022-02-07 10:00:00`
+            stop: End of request timeframe,
+                Format: `2022-02-07 10:00:00`
+
+        Returns:
+            List with item names available
+        :rtype: List[str]
+        """
+        data = []
+        influxdb_values = self.__influx_client.query_data(
+            topic, start, stop, field="status"
+        )
+
+        if influxdb_values:
+            for timestamp, _ in influxdb_values:
+                data.append(f"{topic}/{int(timestamp * 1000)}.dp")
+
+        return data

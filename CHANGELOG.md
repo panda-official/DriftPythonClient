@@ -17,3 +17,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Added
 
 - DRIFT-469: Initial implementation
+- DRIFT-516: Add get_topic_data and deprecate get_list methods, [PR-3](https://github.com/panda-official/DriftPythonClient/pull/3)
