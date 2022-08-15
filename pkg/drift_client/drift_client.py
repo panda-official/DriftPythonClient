@@ -238,7 +238,8 @@ class DriftClient:
     ) -> List[Dict[str, Any]]:
         """Reads history metrics from timeseries database
             >>> client = DriftClient("127.0.0.1", "PASSWORD")
-            >>> client.get_metrics("topic", "2022-02-03 10:00:00", "2022-02-03 10:00:10", names=["status", "field"])
+            >>> client.get_metrics("topic", "2022-02-03 10:00:00",
+            >>>    "2022-02-03 10:00:10", names=["status", "field"])
             >>> #=> [{"status": 0, "field": 0.1231}, ....]
         Args:
             topic: MQTT topic
