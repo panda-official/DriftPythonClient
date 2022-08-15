@@ -1,7 +1,7 @@
 """InfluxDB Client"""
-import pytest
 from datetime import datetime
 
+import pytest
 from influxdb_client.client.flux_table import FluxRecord
 
 from drift_client.influxdb_client import InfluxDBClient
