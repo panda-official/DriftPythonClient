@@ -6,7 +6,7 @@ Drift Client Module for easy access to Compute Devices on the Drift Platform
 
 import time
 import logging
-from typing import Dict, List, Callable, Union
+from typing import Dict, List, Callable, Union, Any, Optional
 from datetime import datetime
 import deprecation
 
@@ -18,15 +18,16 @@ from drift_client.minio_client import MinIOClient
 from drift_client.mqtt_client import MQTTClient
 
 logger = logging.getLogger("drift-client")
+TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 
 def _convert_type(timestamp: Union[float, datetime, str]) -> str:
     if isinstance(timestamp, str):
-        return datetime.fromisoformat(timestamp).strftime("%Y-%m-%d %H:%M:%S")
+        return datetime.fromisoformat(timestamp).strftime(TIME_FORMAT)
     if isinstance(timestamp, float):
-        return datetime.fromtimestamp(timestamp).strftime("%Y-%m-%d %H:%M:%S")
+        return datetime.fromtimestamp(timestamp).strftime(TIME_FORMAT)
     if isinstance(timestamp, datetime):
-        return timestamp.strftime("%Y-%m-%d %H:%M:%S")
+        return timestamp.strftime(TIME_FORMAT)
     raise TypeError("Timestamp must be str, float or datetime")
 
 
@@ -116,14 +117,14 @@ class DriftClient:
         data = {}
         for topic in topics:
             influxdb_values = self.__influx_client.query_data(
-                topic, timeframe[0], timeframe[1], field="status"
+                topic, timeframe[0], timeframe[1], fields="status"
             )
 
             if not influxdb_values:
                 break
 
             data[topic] = []
-            for timestamp, _ in influxdb_values:
+            for timestamp, _ in influxdb_values["status"]:
                 data[topic].append(f"{topic}/{int(timestamp * 1000)}.dp")
 
         return data
@@ -159,11 +160,11 @@ class DriftClient:
 
         data = []
         influxdb_values = self.__influx_client.query_data(
-            topic, start, stop, field="status"
+            topic, start, stop, fields="status"
         )
 
         if influxdb_values:
-            for timestamp, _ in influxdb_values:
+            for timestamp, _ in influxdb_values["status"]:
                 data.append(f"{topic}/{int(timestamp * 1000)}.dp")
 
         return data
@@ -227,3 +228,26 @@ class DriftClient:
             self.__mqtt_client.loop_start()
 
         self.__mqtt_client.publish(topic, payload)
+
+    def get_metrics(
+        self,
+        topic: str,
+        start: Union[float, datetime, str],
+        stop: Union[float, datetime, str],
+        _fields: Optional[List[str]] = None,
+    ) -> List[Dict[str, Any]]:
+        """TODO"""
+
+        start = _convert_type(start)
+        stop = _convert_type(stop)
+
+        data = []
+        influxdb_values = self.__influx_client.query_data(
+            topic, start, stop, fields="status"
+        )
+
+        if influxdb_values:
+            for timestamp, _ in influxdb_values:
+                data.append(f"{topic}/{int(timestamp * 1000)}.dp")
+
+        return data

@@ -36,13 +36,13 @@ def test__timestamp_from_influxdb(influxdb_client):
     """should get timestamp and values for records
     from influxdb and make paths in minio"""
     client = DriftClient("host_name", "password")
-    influxdb_client.query_data.return_value = [(10000.0, 0), (10010.0, 512)]
+    influxdb_client.query_data.return_value = {"status": [(10000.0, 0), (10010.0, 512)]}
 
     data = client.get_list(["topic"], ["2022-01-01 00:00:00", "2022-01-01 00:00:00"])
     assert data == {"topic": ["topic/10000000.dp", "topic/10010000.dp"]}
 
     influxdb_client.query_data.assert_called_with(
-        "topic", "2022-01-01 00:00:00", "2022-01-01 00:00:00", field="status"
+        "topic", "2022-01-01 00:00:00", "2022-01-01 00:00:00", fields="status"
     )
 
 
@@ -63,11 +63,11 @@ def test__get_topic_data(influxdb_client, start_ts, stop_ts):
     """should get timestamp and values for records using start and stop timestamps
     from influxdb and make paths in minio"""
     client = DriftClient("host_name", "password")
-    influxdb_client.query_data.return_value = [(10000.0, 0), (10010.0, 512)]
+    influxdb_client.query_data.return_value = {"status": [(10000.0, 0), (10010.0, 512)]}
 
     data = client.get_package_names("topic", start_ts, stop_ts)
     assert data == ["topic/10000000.dp", "topic/10010000.dp"]
 
     influxdb_client.query_data.assert_called_with(
-        "topic", "2022-01-01 00:00:00", "2022-01-01 00:00:00", field="status"
+        "topic", "2022-01-01T00:00:00Z", "2022-01-01T00:00:00Z", fields="status"
     )

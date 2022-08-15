@@ -2,3 +2,6 @@
 max-line-length = 88
 load-plugins=pylint_protobuf
 extension-pkg-whitelist=pydantic
+
+[FORMAT]
+good-names=dt

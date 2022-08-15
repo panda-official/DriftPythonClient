@@ -1,8 +1,7 @@
 """ Simple InfluxDB client
 """
 
-from typing import List, Tuple, Any
-from datetime import datetime
+from typing import List, Tuple, Any, Union, Dict
 from urllib.parse import urlparse
 
 from influxdb_client import InfluxDBClient as Client
@@ -37,8 +36,6 @@ class InfluxDBClient:
             verify_ssl=secure,
         )
         self.__query_api = self.__client.query_api()
-        self.__input_time_fmt = "%Y-%m-%d %H:%M:%S"
-        self.__output_time_fmt = "%Y-%m-%dT%H:%M:%SZ"
         self.__bucket = "data"
 
     def query_measurements(self) -> List[str]:
@@ -67,33 +64,31 @@ class InfluxDBClient:
         measurement: str,
         start: str,
         stop: str,
-        field: str = "src",
-    ) -> List[Tuple[float, Any]]:
+        fields: Union[str, List[str], None] = None,
+    ) -> Dict[str, List[Tuple[float, Any, str]]]:
         """InfluxDB queries for values"""
         # Change time format for request
-        start = datetime.strptime(start, self.__input_time_fmt).strftime(
-            self.__output_time_fmt
-        )
-        stop = datetime.strptime(stop, self.__input_time_fmt).strftime(
-            self.__output_time_fmt
+        if isinstance(fields, str):
+            fields = [fields]
+
+        filters = ""
+        if fields is not None:
+            filters = " ".join([f'and r._field == "{field}"' for field in fields])
+
+        query = (
+            f'from(bucket:"{self.__bucket}") '
+            f"|> range(start:{start}, stop: {stop}) "
+            f'|> filter(fn: (r) => r._measurement == "{measurement}" {filters})'
         )
 
-        query = f'\
-            from(bucket:"{self.__bucket}")\
-            |> range(start:{start}, stop: {stop})\
-            |> filter(fn: (r) => r._measurement == "{measurement}"\
-                and r._field =~ /{field}/)\
-            '
         response = self.__query_api.query(query)
 
-        data = []
+        data = {}
         for table in response:
             for record in table.records:
-                data.append(
-                    (
-                        record.get_time().timestamp(),
-                        record.get_value(),
-                    )
-                )
+                field = record.get_field()
+                if field not in data:
+                    data[field] = []
+                data[field].append((record.get_time().timestamp(), record.get_value()))
 
         return data
