@@ -213,15 +213,15 @@ class DriftClient:
 
         self.__mqtt_client.loop_forever()
 
-    def publish_data(self, topic: str, payload: str):
+    def publish_data(self, topic: str, payload: bytes):
         """Publishes payload to selected topic on initialised Device
-
-        topic: MQTT topic
-        payload: Stringified data, defaults to None
+        Args:
+            topic: MQTT topic
+            payload: Stringified data, defaults to None
 
         # Examples
             >>> client = DriftClient("127.0.0.1", "PASSWORD")
-            >>> client.publish_data("topic-2", "hello")
+            >>> client.publish_data("topic-2", b"hello")
         """
         if not self.__mqtt_client.is_connected():
             self.__mqtt_client.connect()
@@ -234,20 +234,35 @@ class DriftClient:
         topic: str,
         start: Union[float, datetime, str],
         stop: Union[float, datetime, str],
-        _fields: Optional[List[str]] = None,
+        names: Optional[List[str]] = None,
     ) -> List[Dict[str, Any]]:
-        """TODO"""
+        """Reads history metrics from timeseries database
+        Args:
+            topic: MQTT topic
+            start: Begin of request timeframe,
+                Format: ISO string, datetime or float timestamp
+            stop: End of request timeframe,
+                Format: ISO string, datetime or float timestamp
+        """
 
         start = _convert_type(start)
         stop = _convert_type(stop)
 
-        data = []
+        aligned_data = {}
         influxdb_values = self.__influx_client.query_data(
-            topic, start, stop, fields="status"
+            topic, start, stop, fields=names
         )
 
-        if influxdb_values:
-            for timestamp, _ in influxdb_values:
-                data.append(f"{topic}/{int(timestamp * 1000)}.dp")
+        for field, values in influxdb_values.items():
+            for dt, value in values:
+                if dt not in aligned_data:
+                    aligned_data[dt] = {}
+
+                aligned_data[dt][field] = value
+
+        data = []
+        for dt, fields in aligned_data.items():
+            fields["time"] = dt
+            data.append(fields)
 
         return data

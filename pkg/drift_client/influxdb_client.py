@@ -73,7 +73,9 @@ class InfluxDBClient:
 
         filters = ""
         if fields is not None:
-            filters = " ".join([f'and r._field == "{field}"' for field in fields])
+            filters = "and " + "or".join(
+                [f' r._field == "{field}"' for field in fields]
+            )
 
         query = (
             f'from(bucket:"{self.__bucket}") '
