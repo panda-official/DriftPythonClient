@@ -57,7 +57,7 @@ def test__query_data_for_one_field(response, dt, query_api):
 
     query_api.query.assert_called_with(
         'from(bucket:"data") |> range(start:2022-08-15, stop: 2022-08-15) |> '
-        'filter(fn: (r) => r._measurement == "topic" and r._field == "field")'
+        'filter(fn: (r) => r._measurement == "topic" and ( r._field == "field"))'
     )
 
 
@@ -77,8 +77,8 @@ def test__query_data_for_some_fields(response_multy, dt, query_api):
 
     query_api.query.assert_called_with(
         'from(bucket:"data") |> range(start:2022-08-15, stop: 2022-08-15) |> '
-        'filter(fn: (r) => r._measurement == "topic" and r._field == "field_1" and '
-        'r._field == "field_2")',
+        'filter(fn: (r) => r._measurement == "topic" and ( r._field == "field_1" or '
+        'r._field == "field_2"))',
     )
 
 
