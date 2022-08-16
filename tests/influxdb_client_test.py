@@ -32,7 +32,7 @@ def _make_response(mocker, dt):
     return [table]
 
 
-@pytest.fixture(name="response_multy")
+@pytest.fixture(name="response_multi")
 def _make_response_multy(mocker, dt):
     record1 = FluxRecord("", values={"_time": dt, "_value": 1, "_field": "field_1"})
     record2 = FluxRecord("", values={"_time": dt, "_value": "str", "_field": "field_2"})
@@ -61,9 +61,9 @@ def test__query_data_for_one_field(response, dt, query_api):
     )
 
 
-def test__query_data_for_some_fields(response_multy, dt, query_api):
+def test__query_data_for_some_fields(response_multi, dt, query_api):
     """Should query data and filter it with a few fields"""
-    query_api.query.return_value = response_multy
+    query_api.query.return_value = response_multi
 
     influxdb_client = InfluxDBClient(
         "http://localhost:8086", org="panda", secure=False, token="SECRET"
@@ -82,10 +82,10 @@ def test__query_data_for_some_fields(response_multy, dt, query_api):
     )
 
 
-def test__query_data_for_all_fields(response_multy, dt, query_api):
+def test__query_data_for_all_fields(response_multi, dt, query_api):
     """Should query data for all fields"""
 
-    query_api.query.return_value = response_multy
+    query_api.query.return_value = response_multi
 
     influxdb_client = InfluxDBClient(
         "http://localhost:8086", org="panda", secure=False, token="SECRET"
