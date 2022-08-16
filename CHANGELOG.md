@@ -8,9 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
-## Changed:
+### Added:
 
+- DRIFT-478: `Client.get_metrics` to get metrics from InfluxDB, [PR-10](https://github.com/panda-official/DriftPythonClient/pull/10)
 - DRIFT-510: Make package paths by using time from InfluxDB, [PR-2](https://github.com/panda-official/DriftPythonClient/pull/2)
+- DRIFT-516: `Client.get_topic_data` to get paths in Minio, [PR-5](https://github.com/panda-official/DriftPythonClient/pull/5)
+
+### Deprecated:
+
+- DRIFT-516: `Client.get_list`. Remove in 1.0.0, [PR-5](https://github.com/panda-official/DriftPythonClient/pull/5)
 
 ## [0.1.1] - 2022-07-12
 

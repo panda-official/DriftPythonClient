@@ -6,7 +6,7 @@ Drift Client Module for easy access to Compute Devices on the Drift Platform
 
 import time
 import logging
-from typing import Dict, List, Callable, Union
+from typing import Dict, List, Callable, Union, Any, Optional
 from datetime import datetime
 import deprecation
 
@@ -18,6 +18,17 @@ from drift_client.minio_client import MinIOClient
 from drift_client.mqtt_client import MQTTClient
 
 logger = logging.getLogger("drift-client")
+TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+
+
+def _convert_type(timestamp: Union[float, datetime, str]) -> str:
+    if isinstance(timestamp, str):
+        return datetime.fromisoformat(timestamp).strftime(TIME_FORMAT)
+    if isinstance(timestamp, float):
+        return datetime.fromtimestamp(timestamp).strftime(TIME_FORMAT)
+    if isinstance(timestamp, datetime):
+        return timestamp.strftime(TIME_FORMAT)
+    raise TypeError("Timestamp must be str, float or datetime")
 
 
 class DriftClient:
@@ -106,19 +117,19 @@ class DriftClient:
         data = {}
         for topic in topics:
             influxdb_values = self.__influx_client.query_data(
-                topic, timeframe[0], timeframe[1], field="status"
+                topic, timeframe[0], timeframe[1], fields="status"
             )
 
             if not influxdb_values:
                 break
 
             data[topic] = []
-            for timestamp, _ in influxdb_values:
+            for timestamp, _ in influxdb_values["status"]:
                 data[topic].append(f"{topic}/{int(timestamp * 1000)}.dp")
 
         return data
 
-    def get_topic_data(
+    def get_package_names(
         self,
         topic: str,
         start: Union[float, datetime, str],
@@ -139,14 +150,24 @@ class DriftClient:
 
         Examples:
             >>> client = DriftClient("127.0.0.1", "PASSWORD")
-            >>> client.get_topic_data("topic-1",
+            >>> client.get_package_names("topic-1",
             >>>         "2022-02-03 10:00:00", "2022-02-03 10:00:10")
             >>> # => ['topic-1/1644750600291.dp',
             >>> #                  'topic-1/1644750601291.dp', ...]
         """
-        return self._get_topic_data(
-            topic, self._convert_type(start), self._convert_type(stop)
+        start = _convert_type(start)
+        stop = _convert_type(stop)
+
+        data = []
+        influxdb_values = self.__influx_client.query_data(
+            topic, start, stop, fields="status"
         )
+
+        if influxdb_values:
+            for timestamp, _ in influxdb_values["status"]:
+                data.append(f"{topic}/{int(timestamp * 1000)}.dp")
+
+        return data
 
     def get_item(self, path: str) -> DriftDataPackage:
         """Returns requested single historic data from initialised Device
@@ -192,15 +213,15 @@ class DriftClient:
 
         self.__mqtt_client.loop_forever()
 
-    def publish_data(self, topic: str, payload: str):
+    def publish_data(self, topic: str, payload: bytes):
         """Publishes payload to selected topic on initialised Device
-
-        topic: MQTT topic
-        payload: Stringified data, defaults to None
+        Args:
+            topic: MQTT topic
+            payload: Stringified data, defaults to None
 
         # Examples
             >>> client = DriftClient("127.0.0.1", "PASSWORD")
-            >>> client.publish_data("topic-2", "hello")
+            >>> client.publish_data("topic-2", b"hello")
         """
         if not self.__mqtt_client.is_connected():
             self.__mqtt_client.connect()
@@ -208,36 +229,44 @@ class DriftClient:
 
         self.__mqtt_client.publish(topic, payload)
 
-    def _convert_type(self, timestamp: Union[float, datetime, str]) -> str:
-        if isinstance(timestamp, str):
-            return datetime.fromisoformat(timestamp).strftime("%Y-%m-%d %H:%M:%S")
-        if isinstance(timestamp, float):
-            return datetime.fromtimestamp(timestamp).strftime("%Y-%m-%d %H:%M:%S")
-        if isinstance(timestamp, datetime):
-            return timestamp.strftime("%Y-%m-%d %H:%M:%S")
-        raise TypeError("Timestamp must be str, float or datetime")
-
-    def _get_topic_data(self, topic: str, start: str, stop: str) -> List[str]:
-        """Returns list of history data from initialised Device
-
+    def get_metrics(
+        self,
+        topic: str,
+        start: Union[float, datetime, str],
+        stop: Union[float, datetime, str],
+        names: Optional[List[str]] = None,
+    ) -> List[Dict[str, Any]]:
+        """Reads history metrics from timeseries database
+            >>> client = DriftClient("127.0.0.1", "PASSWORD")
+            >>> client.get_metrics("topic", "2022-02-03 10:00:00",
+            >>>    "2022-02-03 10:00:10", names=["status", "field"])
+            >>> #=> [{"status": 0, "field": 0.1231}, ....]
         Args:
-            topics: Topic name, e.g. `"sensor-1"`
+            topic: MQTT topic
             start: Begin of request timeframe,
-                Format: `2022-02-07 10:00:00`
+                Format: ISO string, datetime or float timestamp
             stop: End of request timeframe,
-                Format: `2022-02-07 10:00:00`
-
-        Returns:
-            List with item names available
-        :rtype: List[str]
+                Format: ISO string, datetime or float timestamp
         """
-        data = []
+
+        start = _convert_type(start)
+        stop = _convert_type(stop)
+
+        aligned_data = {}
         influxdb_values = self.__influx_client.query_data(
-            topic, start, stop, field="status"
+            topic, start, stop, fields=names
         )
 
-        if influxdb_values:
-            for timestamp, _ in influxdb_values:
-                data.append(f"{topic}/{int(timestamp * 1000)}.dp")
+        for field, values in influxdb_values.items():
+            for dt, value in values:
+                if dt not in aligned_data:
+                    aligned_data[dt] = {}
+
+                aligned_data[dt][field] = value
+
+        data = []
+        for dt, fields in aligned_data.items():
+            fields["time"] = dt
+            data.append(fields)
 
         return data
