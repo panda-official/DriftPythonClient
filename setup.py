@@ -7,7 +7,7 @@ from setuptools import setup, find_packages
 
 PACKAGE_NAME = "drift-python-client"
 MAJOR_VERSION = 0
-MINOR_VERSION = 2
+MINOR_VERSION = 3
 PATCH_VERSION = 0
 VERSION_SUFFIX = os.getenv("VERSION_SUFFIX")
 
