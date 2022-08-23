@@ -138,7 +138,7 @@ class DriftClient:
         """Returns list of history data from initialised Device
 
         Args:
-            topics: List of topic names, e.g. `["sensor-1", "sensor-2"]`
+            topic: Topic name
             start: Begin of request timeframe,
                 Format: ISO string, datetime or float timestamp
             stop: End of request timeframe,
@@ -146,7 +146,6 @@ class DriftClient:
 
         Returns:
             List with item names available
-        :rtype: List[str]
 
         Examples:
             >>> client = DriftClient("127.0.0.1", "PASSWORD")
@@ -219,7 +218,7 @@ class DriftClient:
             topic: MQTT topic
             payload: Stringified data, defaults to None
 
-        # Examples
+        Examples
             >>> client = DriftClient("127.0.0.1", "PASSWORD")
             >>> client.publish_data("topic-2", b"hello")
         """
@@ -237,16 +236,21 @@ class DriftClient:
         names: Optional[List[str]] = None,
     ) -> List[Dict[str, Any]]:
         """Reads history metrics from timeseries database
-            >>> client = DriftClient("127.0.0.1", "PASSWORD")
-            >>> client.get_metrics("topic", "2022-02-03 10:00:00",
-            >>>    "2022-02-03 10:00:10", names=["status", "field"])
-            >>> #=> [{"status": 0, "field": 0.1231}, ....]
+
         Args:
             topic: MQTT topic
             start: Begin of request timeframe,
                 Format: ISO string, datetime or float timestamp
             stop: End of request timeframe,
                 Format: ISO string, datetime or float timestamp
+            names: Name of metrics, if None get all metrics for the topic
+
+        Examples
+
+            >>> client = DriftClient("127.0.0.1", "PASSWORD")
+            >>> client.get_metrics("topic", "2022-02-03 10:00:00",
+            >>>    "2022-02-03 10:00:10", names=["status", "field"])
+            >>> #=> [{"status": 0, "field": 0.1231}, ....]
         """
 
         start = _convert_type(start)
