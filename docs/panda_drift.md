@@ -28,7 +28,7 @@ An AI application can be easily integrated into _PANDA|Drift_ infrastructure as 
 **PANDA|Drift** has a highly grained microservice architecture.
 However, it can be presented with few subsystems:
 
-![PANDA|Drift Architecture](/docs/img/DrfitStrutcure.drawio.png "")
+![PANDA|Drift Architecture](img/DrfitStrutcure.drawio.png "PANDA|Drift Architecture")
 
 Our core technology is the MQTT protocol for real-time communication between microservices.
 The Data Accusation layer collects data from data source, denoise and compress it by using [WaveletBuffer][1], then
