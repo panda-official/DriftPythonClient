@@ -1,11 +1,18 @@
 # Drift Python Client
 
-Python Client to access data of [PANDA|Drift](https://www.panda.technology/data-scientists)
+Python Client to access data of [PANDA|Drift](docs/panda_drift.md)
 
 ## Description
 
 Drift Python Client is a high level library to get current or historical data with minimal knowledge about **PANDA|Drift**
 infrastructure.
+
+## Features
+
+* Subscribe to MQTT data
+* Access to history of input data
+* Access to history of metrics
+
 
 ## Installing
 

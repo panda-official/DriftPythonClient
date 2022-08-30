@@ -3,7 +3,7 @@ docs_dir: .
 nav:
   - Home:
       - README: README.md
-      - What is PANDA|Drift?: docs/Drift.md
+      - What is PANDA|Drift?: docs/panda_drift.md
   - API Reference:
       - DriftClient: docs/api/drift_client.md
       - Package: docs/api/package.md
