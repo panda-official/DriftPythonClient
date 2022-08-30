@@ -1,10 +1,10 @@
 # Drift Python Client
 
-Python Client to access data of Devices on Drift Platform
+Python Client to access data of [PANDA|Drift](https://www.panda.technology/data-scientists)
 
 ## Description
 
-Drift Python Client is a high level library to get current or historical data with minimal knowledge about Drift
+Drift Python Client is a high level library to get current or historical data with minimal knowledge about **PANDA|Drift**
 infrastructure.
 
 ## Installing
@@ -41,3 +41,9 @@ for path in packages:
     data = drift_client.get_item(path).as_np(scale_factor=2)
     print(data)
 ```
+
+## References:
+
+* [Documentation](https://driftpythonclient.readthedocs.io/en/latest/)
+* [DriftProtocol](https://github.com/panda-official/DriftProtocol)
+* [WaveletBuffer](https://github.com/panda-official/WaveletBuffer)
