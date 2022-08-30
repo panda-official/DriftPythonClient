@@ -61,13 +61,14 @@ setup(
     extras_require={
         "test": ["pytest==7.1.2", "pytest-mock==3.8.2"],
         "lint": ["pylint==2.14.4", "pylint-protobuf==0.20.2"],
-        "format": ["black==22.6.0"],
+        "format": ["black[jupyter]==22.6.0"],
         "docs": [
             "mkdocs~=1.3",
             "mkdocs-material~=8.3",
             "plantuml-markdown~=3.5",
             "mkdocs-same-dir~=0.1",
             "mkdocstrings[python]~=0.19",
+            "mkdocs-jupyter~=0.21",
         ],
     },
 )

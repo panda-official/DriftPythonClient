@@ -4,6 +4,8 @@ nav:
   - Home:
       - README: README.md
       - What is PANDA|Drift?: docs/panda_drift.md
+  - Tutorials:
+      - docs/tutorials/extract_data.ipynb
   - API Reference:
       - DriftClient: docs/api/drift_client.md
       - Package: docs/api/package.md
@@ -67,6 +69,8 @@ markdown_extensions:
 
 plugins:
   - same-dir
+  - mkdocs-jupyter:
+      include: [ "docs/tutorials/*.ipynb" ]
   - mkdocstrings:
       default_handler: python
       enable_inventory: false
