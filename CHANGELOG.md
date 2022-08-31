@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Added:
+
+- DRIFT-473: Add tutorial and `PANDA|Drift` page, [PR-12](https://github.com/panda-official/DriftPythonClient/pull/12)
+
 ## 0.2.0 - 2022-08-16
 
 ### Added:
