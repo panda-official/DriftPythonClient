@@ -9,7 +9,7 @@ infrastructure.
 
 ## Features
 
-* Subscribe to MQTT data
+* Access to live Drift data
 * Access to history of input data
 * Access to history of metrics
 * Cross-platform
