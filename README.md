@@ -12,7 +12,11 @@ infrastructure.
 * Subscribe to MQTT data
 * Access to history of input data
 * Access to history of metrics
+* Cross-platform
 
+## Requirements
+
+* Python >= 3.8
 
 ## Installing
 
