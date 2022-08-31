@@ -1,22 +1,29 @@
-site_name: Python Client to access data of Devices on Drift Platform
+site_name: Drift Python Client
 docs_dir: .
 nav:
-  - Home: README.md
+  - Home:
+      - README: README.md
+      - What is PANDA|Drift?: docs/panda_drift.md
+  - Tutorials:
+      - docs/tutorials/extract_data.ipynb
   - API Reference:
       - DriftClient: docs/api/drift_client.md
       - Package: docs/api/package.md
-
 
 repo_name: panda-official/DriftPythonClient
 repo_url: https://github.com/panda-official/DriftPythonClient
 edit_uri: edit/main/docs
 
-
+extra:
+  homepage: https://panda.technology
 # Configuration
 theme:
   name: material
+  logo: docs/img/logo.svg
+  favicon: docs/img/favicon.png
   language: en
-
+  palette:
+    primary: black
   font:
     text: Roboto
     code: JetBrains Mono
@@ -62,6 +69,8 @@ markdown_extensions:
 
 plugins:
   - same-dir
+  - mkdocs-jupyter:
+      include: [ "docs/tutorials/*.ipynb" ]
   - mkdocstrings:
       default_handler: python
       enable_inventory: false

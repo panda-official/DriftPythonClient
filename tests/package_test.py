@@ -8,7 +8,7 @@ from wavelet_buffer import (  # pylint: disable=no-name-in-module
     denoise,
 )
 from drift_protocol.common import DriftPackage, StatusCode, DataPayload
-from google.protobuf.any_pb2 import Any
+from google.protobuf.any_pb2 import Any  # pylint: disable=no-name-in-module)
 
 from drift_client import DriftDataPackage
 
