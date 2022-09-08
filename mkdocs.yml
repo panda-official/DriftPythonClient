@@ -6,6 +6,7 @@ nav:
       - What is PANDA|Drift?: docs/panda_drift.md
   - Tutorials:
       - docs/tutorials/extract_data.ipynb
+      - docs/tutorials/denoising_data.ipynb
   - API Reference:
       - DriftClient: docs/api/drift_client.md
       - Package: docs/api/package.md
