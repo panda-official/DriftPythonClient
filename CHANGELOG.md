@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed:
 
-- DRIFT-545: Build on Applie M1
+- DRIFT-545: Build on Apple M1, [PR-15](https://github.com/panda-official/DriftPythonClient/pull/15)
 
 ## 0.2.0 - 2022-08-16
 
