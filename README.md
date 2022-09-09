@@ -1,5 +1,9 @@
 # Drift Python Client
 
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/panda-official/DriftPythonClient/ci)
+![PyPI](https://img.shields.io/pypi/v/drift-python-client)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/drift-python-client)
+
 Python Client to access data of [PANDA|Drift](docs/panda_drift.md)
 
 ## Description
