@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - DRIFT-473: Add tutorial and `PANDA|Drift` page, [PR-12](https://github.com/panda-official/DriftPythonClient/pull/12)
 
+### Fixed:
+
+- DRIFT-545: Build on Apple M1, [PR-15](https://github.com/panda-official/DriftPythonClient/pull/15)
+
 ## 0.2.0 - 2022-08-16
 
 ### Added:
