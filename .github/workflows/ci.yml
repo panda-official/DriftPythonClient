@@ -84,3 +84,22 @@ jobs:
 
       - name: Lint tests
         run: python3 -m pylint ./tests
+
+  pip_upload:
+    name: Upload if release
+    needs: [ test, pylint ]
+    runs-on: ubuntu-latest
+
+    if: ${{ startsWith(github.event.ref, 'refs/tags/v') }}
+    steps:
+      - uses: actions/setup-python@v2
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: package
+          path: ./dist
+
+      - uses: pypa/gh-action-pypi-publish@v1.5.0
+        with:
+          user: ${{ secrets.PYPI_USERNAME }}
+          password: ${{ secrets.PYPI_PASSWORD }}
