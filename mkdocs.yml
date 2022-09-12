@@ -6,13 +6,14 @@ nav:
       - What is PANDA|Drift?: docs/panda_drift.md
   - Tutorials:
       - docs/tutorials/extract_data.ipynb
+      - docs/tutorials/denoising_data.ipynb
   - API Reference:
       - DriftClient: docs/api/drift_client.md
       - Package: docs/api/package.md
 
 repo_name: panda-official/DriftPythonClient
 repo_url: https://github.com/panda-official/DriftPythonClient
-edit_uri: edit/main/docs
+edit_uri: edit/develop/docs
 
 extra:
   homepage: https://panda.technology
