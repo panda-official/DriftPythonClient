@@ -5,6 +5,9 @@ from typing import Optional
 
 from urllib.parse import urlparse
 from minio import Minio
+from minio.error import S3Error
+
+from .error import DriftClientError
 
 
 class MinIOClient:
@@ -54,6 +57,8 @@ class MinIOClient:
         try:
             response = self.__client.get_object(self.__bucket, path)
             data = response.read()
+        except S3Error as err:
+            raise DriftClientError(err)
         finally:
             if response:
                 response.close()
