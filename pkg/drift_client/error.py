@@ -3,5 +3,3 @@
 
 class DriftClientError(Exception):
     """A preliminary generic error"""
-
-    pass

@@ -58,7 +58,7 @@ class MinIOClient:
             response = self.__client.get_object(self.__bucket, path)
             data = response.read()
         except S3Error as err:
-            raise DriftClientError(err)
+            raise DriftClientError("Could not read item at %s", path) from err
         finally:
             if response:
                 response.close()
