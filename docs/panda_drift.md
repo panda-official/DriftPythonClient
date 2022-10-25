@@ -37,10 +37,10 @@ wraps the data into [DriftProtocol][2] and sends it via MQTT, so that all other 
 The AI Services process the input data and provide metrics as results. They could be anomaly scores,
 coordinates of detected objects etc.
 
-As you may notice, we have two types of data: processed input and metrics. _PANDA|Drift_ keeps a history for both
+As you may notice, we have two types of data: processed input and metrics. _Drift Core_ keeps a history for both
 of them, but it does it differently for both and for different purposes:
 
-* Metrics are results of work an AI application does and this is data that users need. To store it, we use InfluxDB and keep
+* Metrics are results of work of an AI application and this is data that users usually need. To store it, we use InfluxDB and keep
   data for long term storage.
 * Input Data are mostly needed for training and model validation. We store it short term as blobs and use Minio
   to provide HTTP access to it.
