@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added:
 
 - DRIFT-550: DriftClientError class, to catch (initially) Minio errors, [PR-16](https://github.com/panda-official/DriftPythonClient/pull/16)
+- Add blob property to DriftDataPackage, [PR-20](https://github.com/panda-official/DriftPythonClient/pull/20)
 
 ## 0.2.1 - 2922-09-09
 
