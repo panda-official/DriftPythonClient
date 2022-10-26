@@ -21,6 +21,7 @@ def check_status(func):
 class DriftDataPackage:  # pylint: disable=no-member
     """Parsed Drift Package with data payload"""
 
+    _blob: bytes
     _pkg: DriftPackage
 
     def __init__(self, blob: bytes):
@@ -29,6 +30,7 @@ class DriftDataPackage:  # pylint: disable=no-member
         Args:
             blob: Serialized  package from database or stream
         """
+        self._blob = blob
         pkg = DriftPackage()
         pkg.ParseFromString(blob)
         self._pkg = pkg
