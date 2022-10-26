@@ -38,6 +38,15 @@ class DriftDataPackage:  # pylint: disable=no-member
     TS_PRECISION = 1000
 
     @property
+    def blob(self) -> bytes:
+        """Serialized DriftPackage, can be passed to file write to save .dp file
+
+        Returns:
+            Serialized DriftPackage
+        """
+        return self._blob
+
+    @property
     def package_id(self) -> int:
         """Package ID
 
