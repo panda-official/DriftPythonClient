@@ -64,4 +64,4 @@ def test__package_parsing(good_package, buffer, signal):
     assert pkg.as_raw() == buffer.serialize()
     assert pkg.as_buffer() == buffer
     assert list(pkg.as_np()) == list(signal)
-    assert pkg._blob == good_package.SerializeToString()
+    assert pkg.blob() == good_package.SerializeToString()
