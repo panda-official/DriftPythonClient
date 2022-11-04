@@ -21,6 +21,7 @@ def check_status(func):
 class DriftDataPackage:  # pylint: disable=no-member
     """Parsed Drift Package with data payload"""
 
+    _blob: bytes
     _pkg: DriftPackage
 
     def __init__(self, blob: bytes):
@@ -29,11 +30,21 @@ class DriftDataPackage:  # pylint: disable=no-member
         Args:
             blob: Serialized  package from database or stream
         """
+        self._blob = blob
         pkg = DriftPackage()
         pkg.ParseFromString(blob)
         self._pkg = pkg
 
     TS_PRECISION = 1000
+
+    @property
+    def blob(self) -> bytes:
+        """Serialized DriftPackage, can be passed to file write to save .dp file
+
+        Returns:
+            Serialized DriftPackage
+        """
+        return self._blob
 
     @property
     def package_id(self) -> int:
