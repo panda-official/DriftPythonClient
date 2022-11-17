@@ -4,6 +4,7 @@ nav:
   - Home:
       - README: README.md
       - What is PANDA|Drift?: docs/panda_drift.md
+      - Dependencies: docs/dependencies.md
   - Tutorials:
       - docs/tutorials/extract_data.ipynb
       - docs/tutorials/denoising_data.ipynb
