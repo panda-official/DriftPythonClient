@@ -65,3 +65,9 @@ def test__package_parsing(good_package, buffer, signal):
     assert pkg.as_buffer() == buffer
     assert list(pkg.as_np()) == list(signal)
     assert pkg.blob == good_package.SerializeToString()
+
+
+def test__scale_factor(good_package, signal):
+    """Should return scaled data"""
+    pkg = DriftDataPackage(good_package.SerializeToString())
+    assert len(pkg.as_np(scale_factor=1)) == int(len(signal) / 2)
