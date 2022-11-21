@@ -10,10 +10,10 @@ import numpy as np
 def check_status(func):
     """Check Package status"""
 
-    def dec(self):
+    def dec(self, **kwargs):
         if self._pkg.status != StatusCode.GOOD:  # pylint: disable=protected-access
             raise ValueError("Bad package")
-        return func(self)
+        return func(self, **kwargs)
 
     return dec
 
