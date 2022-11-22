@@ -1,12 +1,14 @@
 """Reduct Storage client"""
-from typing import Tuple, List, Optional
+from typing import Tuple, List, Optional, Dict
+from asyncio import new_event_loop
 
 from drift_client.error import DriftClientError
 from reduct import Client, Bucket, ReductError, EntryInfo
-from asyncio import new_event_loop
 
 
 class ReductStorageClient:
+    """Wrapper around Reduct Storage client"""
+
     def __init__(self, url: str, token: str):
         self._client = Client(url, api_token=token)
         self._bucket = "data"
@@ -15,7 +17,8 @@ class ReductStorageClient:
 
     def check_package_list(self, package_names: List[str]) -> list:
         """Check if packages exist in Reduct Storage"""
-        entry_map = dict()
+        entry_map: Dict[str, List[int]] = {}
+        # bad design, we don't know if all packages belong to the same entry
         for package_name in package_names:
             entry, timestamp = self._parse_minio_path(package_name)
             if entry not in entry_map:
@@ -23,12 +26,14 @@ class ReductStorageClient:
             else:
                 entry_map[entry].append(timestamp)
 
+        # retrieve all entries
         try:
             bucket: Bucket = self._run(self._client.get_bucket(self._bucket))
             entries_in_storage: List[EntryInfo] = self._run(bucket.get_entry_list())
         except ReductError as err:
-            raise DriftClientError(f"Failed to list entries") from err
+            raise DriftClientError("Failed to list entries") from err
 
+        # check if the packages are still in storage
         for entry in entries_in_storage:
             if entry.name in entry_map:
                 entry_map[entry.name] = sorted(
@@ -37,13 +42,15 @@ class ReductStorageClient:
                     if entry.oldest_record <= timestamp * 1000 <= entry.latest_record
                 )
 
+        # restore entry/ts.db format
         return [
-            "{}/{}.dp".format(entry, timestamp)
+            f"{entry}/{timestamp}.dp"
             for entry, timestamps in entry_map.items()
             for timestamp in timestamps
         ]
 
     def fetch_data(self, path: str) -> Optional[bytes]:
+        """Fetch data from Reduct Storage via timestamp"""
         entry, timestamp = self._parse_minio_path(path)
         try:
             return self._run(self._read_by_timestamp(entry, timestamp))
