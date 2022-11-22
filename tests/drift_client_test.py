@@ -1,6 +1,8 @@
 """Tests for DriftClient"""
 from datetime import datetime
+
 import pytest
+
 from drift_client import DriftClient
 
 
@@ -43,6 +45,15 @@ def test__default_initialization(influxdb_klass, reduct_klass):
     )
 
 
+@pytest.mark.usefixtures("minio_klass")
+def test__minio_fallback(reduct_klass, minio_klass):
+    """should initialize minio client if reduct storage is not available"""
+    reduct_klass.side_effect = Exception("Boom")
+
+    _ = DriftClient("host_name", "password")
+    minio_klass.assert_called_with("http://host_name:9000", "panda", "password", False)
+
+
 @pytest.mark.usefixtures("reduct_klass")
 def test__timestamp_from_influxdb(influxdb_client):
     """should get timestamp and values for records
@@ -75,17 +86,19 @@ def test__get_topic_data(influxdb_client, reduct_client, start_ts, stop_ts):
     from influxdb and make paths in minio"""
     client = DriftClient("host_name", "password")
     influxdb_client.query_data.return_value = {"status": [(10000.0, 0), (10010.0, 512)]}
-    reduct_client.check_package_list.return_value = [
+    expected = [
         "topic/10000000.dp",
         "topic/10010000.dp",
     ]
+    reduct_client.check_package_list.return_value = expected
 
     data = client.get_package_names("topic", start_ts, stop_ts)
-    assert data == ["topic/10000000.dp", "topic/10010000.dp"]
+    assert data == expected
 
     influxdb_client.query_data.assert_called_with(
         "topic", "2022-01-01T00:00:00Z", "2022-01-01T00:00:00Z", fields="status"
     )
+    reduct_client.check_package_list.assert_called_with(expected)
 
 
 @pytest.mark.usefixtures("reduct_klass")

@@ -4,14 +4,13 @@ Drift Client Module for easy access to Compute Devices on the Drift Platform
 
 """
 
-import time
 import logging
-from typing import Dict, List, Callable, Union, Any, Optional
+import time
 from datetime import datetime
-import deprecation
+from typing import Dict, List, Callable, Union, Any, Optional
 
+import deprecation
 from google.protobuf.message import DecodeError
-from reduct import ReductError
 
 from drift_client.drift_data_package import DriftDataPackage
 from drift_client.influxdb_client import InfluxDBClient
@@ -50,6 +49,7 @@ class DriftClient:
             org (str): An organisation name. Default: "panda"
             secure (bool): Use HTTPS protocol to access data: Default: False
             minio_port (int): Minio port. Default: 9000
+            reduct_port (int): Reduct port. Default: 8383
             influx_port (int): InfluxDB port. Default: 8086,
             mqtt_port (int): MQTT port. Default: 1883
         """
@@ -76,7 +76,7 @@ class DriftClient:
                 f"{('https://' if secure else 'http://')}{host}:{reduct_storage_port}",
                 password,
             )
-        except ReductError:
+        except Exception:  # pylint: disable=broad-except
             # Minio as fallback if reduct storage is not available
             self._blob_storage = MinIOClient(
                 f"{('https://' if secure else 'http://')}{host}:{minio_port}",

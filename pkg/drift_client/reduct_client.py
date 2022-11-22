@@ -42,6 +42,11 @@ class ReductStorageClient:
                     if entry.oldest_record <= timestamp * 1000 <= entry.latest_record
                 )
 
+        # remove not existing topics
+        for entry in list(entry_map.keys()):
+            if entry not in [e.name for e in entries_in_storage]:
+                del entry_map[entry]
+
         # restore entry/ts.db format
         return [
             f"{entry}/{timestamp}.dp"
