@@ -40,10 +40,10 @@ coordinates of detected objects etc.
 As you may notice, we have two types of data: processed input and metrics. _Drift Core_ keeps a history for both
 of them, but it does it differently for both and for different purposes:
 
-* Metrics are results of work of an AI application and this is data that users usually need. To store it, we use InfluxDB and keep
-  data for long term storage.
-* Input Data are mostly needed for training and model validation. We store it short term as blobs and use Minio
-  to provide HTTP access to it.
+* Metrics are results of work of an AI application and this is data that users usually need. To store it, we use
+  [InfluxDB](https://www.influxdata.com/products/influxdb-overview/) and keep data for long term storage.
+* Input Data are mostly needed for training and model validation. We store it short term as blobs and
+  use [Minio](https://min.io) or [ReductStorage](https://reduct-storage.dev) to provide HTTP access to it.
 
 ## Integration
 
