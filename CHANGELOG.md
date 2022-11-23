@@ -7,10 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### 0.3.0 - 2022-11-23
+
 ### Added
 
 - DRIFT-534: Dependencies compatibility table, [PR-21](https://github.com/panda-official/DriftPythonClient/pull/21)
-- DRIFT-550: DriftClientError class, to catch (initially) Minio errors, [PR-16](https://github.com/panda-official/DriftPythonClient/pull/16)7
+- DRIFT-550: DriftClientError class, to catch (initially) Minio errors, [PR-16](https://github.com/panda-official/DriftPythonClient/pull/16)
 - DRIFT-563: Reduct Storage client, [PR-24](https://github.com/panda-official/DriftPythonClient/pull/24)
 - DRIFT-604: Add blob property to DriftDataPackage, [PR-20](https://github.com/panda-official/DriftPythonClient/pull/20)
 
