@@ -4,18 +4,19 @@ Drift Client Module for easy access to Compute Devices on the Drift Platform
 
 """
 
-import time
 import logging
-from typing import Dict, List, Callable, Union, Any, Optional
+import time
 from datetime import datetime
-import deprecation
+from typing import Dict, List, Callable, Union, Any, Optional
 
+import deprecation
 from google.protobuf.message import DecodeError
 
 from drift_client.drift_data_package import DriftDataPackage
 from drift_client.influxdb_client import InfluxDBClient
 from drift_client.minio_client import MinIOClient
 from drift_client.mqtt_client import MQTTClient
+from drift_client.reduct_client import ReductStorageClient
 
 logger = logging.getLogger("drift-client")
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
@@ -48,6 +49,7 @@ class DriftClient:
             org (str): An organisation name. Default: "panda"
             secure (bool): Use HTTPS protocol to access data: Default: False
             minio_port (int): Minio port. Default: 9000
+            reduct_port (int): Reduct port. Default: 8383
             influx_port (int): InfluxDB port. Default: 8086,
             mqtt_port (int): MQTT port. Default: 1883
         """
@@ -57,21 +59,32 @@ class DriftClient:
         secure = kwargs["secure"] if "secure" in kwargs else False
         influx_port = kwargs["influx_port"] if "influx_port" in kwargs else 8086
         minio_port = kwargs["minio_port"] if "minio_port" in kwargs else 9000
+        reduct_storage_port = (
+            kwargs["reduct_storage_port"] if "reduct_storage_port" in kwargs else 8383
+        )
         mqtt_port = kwargs["mqtt_port"] if "mqtt_port" in kwargs else 1883
 
-        self.__influx_client = InfluxDBClient(
+        self._influx_client = InfluxDBClient(
             f"{('https://' if secure else 'http://')}{host}:{influx_port}",
             org,
             password,
             False,
         )  # TBD!!! --> SSL handling!
-        self.__minio_client = MinIOClient(
-            f"{('https://' if secure else 'http://')}{host}:{minio_port}",
-            user,
-            password,
-            False,
-        )  # TBD!!! --> SSL handling!
-        self.__mqtt_client = MQTTClient(
+
+        try:
+            self._blob_storage = ReductStorageClient(
+                f"{('https://' if secure else 'http://')}{host}:{reduct_storage_port}",
+                password,
+            )
+        except Exception:  # pylint: disable=broad-except
+            # Minio as fallback if reduct storage is not available
+            self._blob_storage = MinIOClient(
+                f"{('https://' if secure else 'http://')}{host}:{minio_port}",
+                user,
+                password,
+                False,
+            )  # TBD!!! --> SSL handling!
+        self._mqtt_client = MQTTClient(
             f"mqtt://{host}:{mqtt_port}",
             client_id=f"drift_client_{int(time.time() * 1000)}",
         )
@@ -87,7 +100,7 @@ class DriftClient:
             >>> client.get_topics() # => ['topic-1', 'topic-2', ...]
         """
 
-        topics = self.__influx_client.query_measurements()
+        topics = self._influx_client.query_measurements()
         return topics
 
     @deprecation.deprecated(
@@ -116,7 +129,7 @@ class DriftClient:
         """
         data = {}
         for topic in topics:
-            influxdb_values = self.__influx_client.query_data(
+            influxdb_values = self._influx_client.query_data(
                 topic, timeframe[0], timeframe[1], fields="status"
             )
 
@@ -157,16 +170,17 @@ class DriftClient:
         start = _convert_type(start)
         stop = _convert_type(stop)
 
-        data = []
-        influxdb_values = self.__influx_client.query_data(
+        package_list = []
+        influxdb_values = self._influx_client.query_data(
             topic, start, stop, fields="status"
         )
 
         if influxdb_values:
             for timestamp, _ in influxdb_values["status"]:
-                data.append(f"{topic}/{int(timestamp * 1000)}.dp")
+                package_list.append(f"{topic}/{int(timestamp * 1000)}.dp")
 
-        return data
+        # Check if package_list is available (works only for Reduct Storage)
+        return self._blob_storage.check_package_list(package_list)
 
     def get_item(self, path: str) -> DriftDataPackage:
         """Returns requested single historic data from initialised Device
@@ -181,7 +195,7 @@ class DriftClient:
             >>> client = DriftClient("127.0.0.1", "PASSWORD")
             >>> client.get_item("topic-1/1644750605291.dp")
         """
-        blob = self.__minio_client.fetch_data(path)
+        blob = self._blob_storage.fetch_data(path)
         return DriftDataPackage(blob)
 
     def subscribe_data(self, topic: str, handler: Callable[[DriftDataPackage], None]):
@@ -207,10 +221,10 @@ class DriftClient:
                 raise DecodeError("Payload is no Drift Package") from exc
             handler(output)
 
-        self.__mqtt_client.connect()
-        self.__mqtt_client.subscribe(topic, package_handler)
+        self._mqtt_client.connect()
+        self._mqtt_client.subscribe(topic, package_handler)
 
-        self.__mqtt_client.loop_forever()
+        self._mqtt_client.loop_forever()
 
     def publish_data(self, topic: str, payload: bytes):
         """Publishes payload to selected topic on initialised Device
@@ -222,11 +236,11 @@ class DriftClient:
             >>> client = DriftClient("127.0.0.1", "PASSWORD")
             >>> client.publish_data("topic-2", b"hello")
         """
-        if not self.__mqtt_client.is_connected():
-            self.__mqtt_client.connect()
-            self.__mqtt_client.loop_start()
+        if not self._mqtt_client.is_connected():
+            self._mqtt_client.connect()
+            self._mqtt_client.loop_start()
 
-        self.__mqtt_client.publish(topic, payload)
+        self._mqtt_client.publish(topic, payload)
 
     def get_metrics(
         self,
@@ -257,7 +271,7 @@ class DriftClient:
         stop = _convert_type(stop)
 
         aligned_data = {}
-        influxdb_values = self.__influx_client.query_data(
+        influxdb_values = self._influx_client.query_data(
             topic, start, stop, fields=names
         )
 

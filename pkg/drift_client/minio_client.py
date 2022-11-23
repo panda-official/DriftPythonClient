@@ -1,7 +1,7 @@
 """ Simple MinIO client
 """
 
-from typing import Optional
+from typing import Optional, List
 
 from urllib.parse import urlparse
 from minio import Minio
@@ -41,6 +41,11 @@ class MinIOClient:
             secure=secure,
         )
         self.__bucket = "data"
+
+    def check_package_list(self, package_names: List[str]) -> list:
+        """Check if packages exist in Minio"""
+        # Not possible with Minio
+        return package_names
 
     def fetch_data(self, path: str) -> Optional[bytes]:
         """Fetch object from Minio
