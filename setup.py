@@ -52,12 +52,12 @@ setup(
     install_requires=[
         "influxdb-client==1.30.0",
         "minio==7.1.10",
-        "drift-protocol>=0.2.0, <1.0",
+        "drift-protocol>=0.3.0, <1.0",
         "wavelet-buffer>=0.4.0, <1.0",
         "paho-mqtt==1.6.1",
         "numpy==1.23.1",
         "deprecation==2.1.0",
-        "reduct-py~=1.0",
+        "reduct-py~=1.1",
     ],
     extras_require={
         "test": ["pytest==7.1.2", "pytest-mock==3.8.2"],
