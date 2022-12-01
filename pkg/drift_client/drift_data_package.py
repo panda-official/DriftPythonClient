@@ -2,8 +2,9 @@
 from typing import Optional
 
 from wavelet_buffer import WaveletBuffer  # pylint: disable=no-name-in-module
-from drift_protocol.meta import MetaInfo
 from drift_protocol.common import DataPayload, DriftPackage, StatusCode
+from drift_protocol.meta import MetaInfo
+
 import numpy as np
 
 
