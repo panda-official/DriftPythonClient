@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Fixed:
+
+-  Circular import in protobuf files, [PR-25](https://github.com/panda-official/DriftPythonClient/pull/25)
+
 ### 0.3.0 - 2022-11-23
 
 ### Added
