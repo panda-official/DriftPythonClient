@@ -6,7 +6,7 @@ following features:
 **Data Acquisition**
 
 The platform uses microservices to gather data from different data source.
-For example, the data source could be an OPCUA server of an automation system, a vibration sensor or a CV camera.
+For example, the data source could be an OPCUA or MODBUS server of an automation system, a vibration sensor or a CV camera.
 
 **Data Processing**
 
@@ -43,7 +43,7 @@ of them, but it does it differently for both and for different purposes:
 * Metrics are results of work of an AI application and this is data that users usually need. To store it, we use
   [InfluxDB](https://www.influxdata.com/products/influxdb-overview/) and keep data for long term storage.
 * Input Data are mostly needed for training and model validation. We store it short term as blobs and
-  use [Minio](https://min.io) or [ReductStorage](https://reduct-storage.dev) to provide HTTP access to it.
+  use [ReductStore](https://www.reduct.store) to provide HTTP access to it.
 
 ## Integration
 
