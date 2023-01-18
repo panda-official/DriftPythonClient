@@ -49,7 +49,7 @@ drift_client = DriftClient(os.getenv("DRIFT_DEVICE"), os.getenv("DRIFT_PASSWORD"
 
 print("Available topics: ", drift_client.get_topics())
 
-start_time = datetime.utcnow() - timedelta(days=1)
+start_time = datetime.utcnow() - timedelta(hours=1)
 stop_time = datetime.utcnow()
 metrics = drift_client.get_metrics(
     "energy-acc-1",

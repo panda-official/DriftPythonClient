@@ -42,8 +42,7 @@ of them, but it does it differently for both and for different purposes:
 
 * Metrics are results of work of an AI application and this is data that users usually need. To store it, we use
   [InfluxDB](https://www.influxdata.com/products/influxdb-overview/) and keep data for long term storage.
-* Input Data are mostly needed for training and model validation. We store it short term as blobs and
-  use [ReductStore](https://www.reduct.store) to provide HTTP access to it.
+* Input Data are mostly needed for training and model validation. We store it short term as blobs and provide HTTP access to it.
 
 ## Integration
 
