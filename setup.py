@@ -51,18 +51,18 @@ setup(
     python_requires=">=3.8",
     install_requires=[
         "influxdb-client==1.30.0",
-        "minio==7.1.10",
         "drift-protocol>=0.3.0, <1.0",
         "wavelet-buffer>=0.4.0, <1.0",
         "paho-mqtt==1.6.1",
         "numpy==1.23.1",
         "deprecation==2.1.0",
-        "reduct-py~=1.1",
+        "reduct-py~=1.2",
     ],
     extras_require={
         "test": ["pytest==7.1.2", "pytest-mock==3.8.2"],
         "lint": ["pylint==2.14.4", "pylint-protobuf==0.20.2"],
         "format": ["black[jupyter]==22.6.0"],
+        "minio": ["minio==7.1.10"],  # for internal usage
         "docs": [
             "mkdocs~=1.3",
             "mkdocs-material~=8.3",
