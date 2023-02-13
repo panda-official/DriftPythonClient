@@ -74,7 +74,13 @@ def test__fetch_package(mocker, bucket):
             yield data
 
         return Record(
-            timestamp=timestamp, size=len(data), last=True, read_all=read_all, read=read
+            timestamp=timestamp,
+            size=len(data),
+            last=True,
+            read_all=read_all,
+            read=read,
+            content_type="",
+            labels={},
         )
 
     ctx = mocker.MagicMock()
