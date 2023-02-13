@@ -76,7 +76,8 @@ class DriftClient:
         try:
             self._blob_storage = ReductStoreClient(
                 f"{('https://' if secure else 'http://')}{host}:{reduct_storage_port}",
-                password, loop
+                password,
+                loop,
             )
         except Exception:  # pylint: disable=broad-except
             # Minio as fallback if reduct storage is not available
@@ -145,10 +146,10 @@ class DriftClient:
         return data
 
     def get_package_names(
-            self,
-            topic: str,
-            start: Union[float, datetime, str],
-            stop: Union[float, datetime, str],
+        self,
+        topic: str,
+        start: Union[float, datetime, str],
+        stop: Union[float, datetime, str],
     ) -> List[str]:
         """Returns list of history data from initialised Device
 
@@ -245,11 +246,11 @@ class DriftClient:
         self._mqtt_client.publish(topic, payload)
 
     def get_metrics(
-            self,
-            topic: str,
-            start: Union[float, datetime, str],
-            stop: Union[float, datetime, str],
-            names: Optional[List[str]] = None,
+        self,
+        topic: str,
+        start: Union[float, datetime, str],
+        stop: Union[float, datetime, str],
+        names: Optional[List[str]] = None,
     ) -> List[Dict[str, Any]]:
         """Reads history metrics from timeseries database
 

@@ -10,7 +10,7 @@ from reduct import Client, Bucket, ReductError, EntryInfo
 class ReductStoreClient:
     """Wrapper around Reduct Storage client"""
 
-    def __init__(self, url: str, token: str, loop = None):
+    def __init__(self, url: str, token: str, loop=None):
         """
         Args:
             url: ReductStore URL
