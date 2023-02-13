@@ -57,12 +57,12 @@ setup(
         "numpy==1.23.1",
         "deprecation==2.1.0",
         "reduct-py~=1.3",
+        "minio==7.1.10",
     ],
     extras_require={
         "test": ["pytest==7.1.2", "pytest-mock==3.8.2"],
         "lint": ["pylint==2.14.4", "pylint-protobuf==0.20.2"],
         "format": ["black[jupyter]==22.6.0"],
-        "minio": ["minio==7.1.10"],  # for internal usage
         "docs": [
             "mkdocs~=1.3",
             "mkdocs-material~=8.3",

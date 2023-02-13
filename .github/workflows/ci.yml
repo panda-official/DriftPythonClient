@@ -58,7 +58,7 @@ jobs:
         run:  pip3 install dist/*
 
       - name: Install dependencies
-        run: pip3 install .[test,minio]
+        run: pip3 install .[test]
 
       - name: Run Tests
         run: pytest tests
@@ -77,7 +77,7 @@ jobs:
         run:  pip3 install dist/*
 
       - name: Install dependencies
-        run: pip3 install .[test,lint,minio]
+        run: pip3 install .[test,lint]
 
       - name: Lint main
         run: python3 -m pylint ./pkg/
