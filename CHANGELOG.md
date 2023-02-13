@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### 0.4.0 - 2023-02-13
+
 ### Added:
 
 - DRIFT-542: Quick start manual for Windows users, [PR-27](https://github.com/panda-official/DriftPythonClient/pull/27)
