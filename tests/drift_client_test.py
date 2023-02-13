@@ -69,8 +69,8 @@ def test__timestamp_from_influxdb(influxdb_client):
     )
 
 
-start = datetime.strptime("2022-01-01 00:00:00", "%Y-%m-%d %H:%M:%S")
-stop = datetime.strptime("2022-01-01 00:00:00", "%Y-%m-%d %H:%M:%S")
+start = datetime.fromisoformat("2022-01-01 00:00:00+01:00")
+stop = datetime.fromisoformat("2022-01-01 00:00:00+01:00")
 
 
 @pytest.mark.parametrize(
