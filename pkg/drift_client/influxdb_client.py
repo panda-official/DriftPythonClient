@@ -62,8 +62,8 @@ class InfluxDBClient:
     def query_data(
         self,
         measurement: str,
-        start: str,
-        stop: str,
+        start: int,
+        stop: int,
         fields: Union[str, List[str], None] = None,
     ) -> Dict[str, List[Tuple[float, Any, str]]]:
         """InfluxDB queries for values"""

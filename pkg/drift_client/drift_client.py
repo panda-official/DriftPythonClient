@@ -22,13 +22,13 @@ logger = logging.getLogger("drift-client")
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 
-def _convert_type(timestamp: Union[float, datetime, str]) -> str:
+def _convert_type(timestamp: Union[float, datetime, str]) -> int:
     if isinstance(timestamp, str):
-        return datetime.fromisoformat(timestamp).strftime(TIME_FORMAT)
+        return int(datetime.fromisoformat(timestamp.replace("Z", "+00:00")).timestamp())
     if isinstance(timestamp, float):
-        return datetime.fromtimestamp(timestamp).strftime(TIME_FORMAT)
+        return int(timestamp)
     if isinstance(timestamp, datetime):
-        return timestamp.strftime(TIME_FORMAT)
+        return int(timestamp.timestamp())
     raise TypeError("Timestamp must be str, float or datetime")
 
 
@@ -145,10 +145,10 @@ class DriftClient:
         return data
 
     def get_package_names(
-        self,
-        topic: str,
-        start: Union[float, datetime, str],
-        stop: Union[float, datetime, str],
+            self,
+            topic: str,
+            start: Union[float, datetime, str],
+            stop: Union[float, datetime, str],
     ) -> List[str]:
         """Returns list of history data from initialised Device
 
@@ -245,11 +245,11 @@ class DriftClient:
         self._mqtt_client.publish(topic, payload)
 
     def get_metrics(
-        self,
-        topic: str,
-        start: Union[float, datetime, str],
-        stop: Union[float, datetime, str],
-        names: Optional[List[str]] = None,
+            self,
+            topic: str,
+            start: Union[float, datetime, str],
+            stop: Union[float, datetime, str],
+            names: Optional[List[str]] = None,
     ) -> List[Dict[str, Any]]:
         """Reads history metrics from timeseries database
 
