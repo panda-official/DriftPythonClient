@@ -16,7 +16,7 @@ from drift_client.drift_data_package import DriftDataPackage
 from drift_client.influxdb_client import InfluxDBClient
 from drift_client.minio_client import MinIOClient
 from drift_client.mqtt_client import MQTTClient
-from drift_client.reduct_client import ReductStorageClient
+from drift_client.reduct_client import ReductStoreClient
 
 logger = logging.getLogger("drift-client")
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
@@ -52,6 +52,7 @@ class DriftClient:
             reduct_port (int): Reduct port. Default: 8383
             influx_port (int): InfluxDB port. Default: 8086,
             mqtt_port (int): MQTT port. Default: 1883
+            loop: asyncio loop for integration into async code
         """
 
         user = kwargs["user"] if "user" in kwargs else "panda"
@@ -63,6 +64,7 @@ class DriftClient:
             kwargs["reduct_storage_port"] if "reduct_storage_port" in kwargs else 8383
         )
         mqtt_port = kwargs["mqtt_port"] if "mqtt_port" in kwargs else 1883
+        loop = kwargs["loop"] if "loop" in kwargs else None
 
         self._influx_client = InfluxDBClient(
             f"{('https://' if secure else 'http://')}{host}:{influx_port}",
@@ -72,9 +74,9 @@ class DriftClient:
         )  # TBD!!! --> SSL handling!
 
         try:
-            self._blob_storage = ReductStorageClient(
+            self._blob_storage = ReductStoreClient(
                 f"{('https://' if secure else 'http://')}{host}:{reduct_storage_port}",
-                password,
+                password, loop
             )
         except Exception:  # pylint: disable=broad-except
             # Minio as fallback if reduct storage is not available
