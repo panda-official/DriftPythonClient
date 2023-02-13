@@ -11,12 +11,12 @@ logging.basicConfig(level=logging.INFO)
 
 def main():
     # Init
-    drift_client = DriftClient("drift-test-rig.local", os.getenv("DRIFT_PASSWORD"))
+    drift_client = DriftClient("drift-dev2.local", os.getenv("DRIFT_PASSWORD"))
     # Download list of history
     packages = drift_client.get_package_names(
-        "acc-1",
-        start=datetime.datetime.utcnow() - datetime.timedelta(minutes=1),
-        stop=datetime.datetime.utcnow(),
+        "acc-5",
+        start=datetime.datetime.now() - datetime.timedelta(minutes=1),
+        stop=datetime.datetime.now(),
     )
 
     # Show length of list

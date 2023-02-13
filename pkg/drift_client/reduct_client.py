@@ -1,4 +1,5 @@
 """Reduct Storage client"""
+import asyncio
 from typing import Tuple, List, Optional, Dict
 from asyncio import new_event_loop
 
@@ -6,13 +7,19 @@ from drift_client.error import DriftClientError
 from reduct import Client, Bucket, ReductError, EntryInfo
 
 
-class ReductStorageClient:
+class ReductStoreClient:
     """Wrapper around Reduct Storage client"""
 
-    def __init__(self, url: str, token: str):
+    def __init__(self, url: str, token: str, loop=None):
+        """
+        Args:
+            url: ReductStore URL
+            token: ReductStore API token
+            loop: asyncio event loop
+        """
         self._client = Client(url, api_token=token)
         self._bucket = "data"
-        self._loop = new_event_loop()
+        self._loop = loop if loop else new_event_loop()
         _ = self._run(self._client.info())  # check connection for fallback to Minio
 
     def check_package_list(self, package_names: List[str]) -> list:
@@ -73,4 +80,6 @@ class ReductStorageClient:
         return entry, int(file.replace(".dp", ""))
 
     def _run(self, coro):
+        if self._loop.is_running():
+            return asyncio.run_coroutine_threadsafe(coro, self._loop).result()
         return self._loop.run_until_complete(coro)

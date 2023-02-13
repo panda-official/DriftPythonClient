@@ -48,15 +48,13 @@ def test__query_data_for_one_field(response, dt, query_api):
     influxdb_client = InfluxDBClient(
         "http://localhost:8086", org="panda", secure=False, token="SECRET"
     )
-    data = influxdb_client.query_data(
-        "topic", "2022-08-15", "2022-08-15", fields="field"
-    )
+    data = influxdb_client.query_data("topic", 1000, 2000, fields="field")
 
     assert data["field"][0] == (dt.timestamp(), 1)
     assert data["field"][1] == (dt.timestamp(), "str")
 
     query_api.query.assert_called_with(
-        'from(bucket:"data") |> range(start:2022-08-15, stop: 2022-08-15) |> '
+        'from(bucket:"data") |> range(start:1000, stop: 2000) |> '
         'filter(fn: (r) => r._measurement == "topic" and ( r._field == "field"))'
     )
 
@@ -69,14 +67,14 @@ def test__query_data_for_some_fields(response_multi, dt, query_api):
         "http://localhost:8086", org="panda", secure=False, token="SECRET"
     )
     data = influxdb_client.query_data(
-        "topic", "2022-08-15", "2022-08-15", fields=["field_1", "field_2"]
+        "topic", 1000, 2000, fields=["field_1", "field_2"]
     )
 
     assert data["field_1"][0] == (dt.timestamp(), 1)
     assert data["field_2"][0] == (dt.timestamp(), "str")
 
     query_api.query.assert_called_with(
-        'from(bucket:"data") |> range(start:2022-08-15, stop: 2022-08-15) |> '
+        'from(bucket:"data") |> range(start:1000, stop: 2000) |> '
         'filter(fn: (r) => r._measurement == "topic" and ( r._field == "field_1" or '
         'r._field == "field_2"))',
     )
@@ -90,12 +88,12 @@ def test__query_data_for_all_fields(response_multi, dt, query_api):
     influxdb_client = InfluxDBClient(
         "http://localhost:8086", org="panda", secure=False, token="SECRET"
     )
-    data = influxdb_client.query_data("topic", "2022-08-15", "2022-08-15")
+    data = influxdb_client.query_data("topic", 1000, 2000)
 
     assert data["field_1"][0] == (dt.timestamp(), 1)
     assert data["field_2"][0] == (dt.timestamp(), "str")
 
     query_api.query.assert_called_with(
-        'from(bucket:"data") |> range(start:2022-08-15, stop: 2022-08-15) |> '
+        'from(bucket:"data") |> range(start:1000, stop: 2000) |> '
         'filter(fn: (r) => r._measurement == "topic" )',
     )

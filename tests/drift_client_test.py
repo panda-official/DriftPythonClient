@@ -18,7 +18,7 @@ def _mock_influx_class(mocker):
 
 @pytest.fixture(name="reduct_klass")
 def _mock_reduct_class(mocker):
-    return mocker.patch("drift_client.drift_client.ReductStorageClient")
+    return mocker.patch("drift_client.drift_client.ReductStoreClient")
 
 
 @pytest.fixture(name="influxdb_client")
@@ -39,7 +39,7 @@ def test__default_initialization(influxdb_klass, reduct_klass):
     """should initialize clients with default settings"""
     _ = DriftClient("host_name", "password")
 
-    reduct_klass.assert_called_with("http://host_name:8383", "password")
+    reduct_klass.assert_called_with("http://host_name:8383", "password", None)
     influxdb_klass.assert_called_with(
         "http://host_name:8086", "panda", "password", False
     )
@@ -69,8 +69,8 @@ def test__timestamp_from_influxdb(influxdb_client):
     )
 
 
-start = datetime.strptime("2022-01-01 00:00:00", "%Y-%m-%d %H:%M:%S")
-stop = datetime.strptime("2022-01-01 00:00:00", "%Y-%m-%d %H:%M:%S")
+start = datetime.fromisoformat("2022-01-01 00:00:00+01:00")
+stop = datetime.fromisoformat("2022-01-01 00:00:00+01:00")
 
 
 @pytest.mark.parametrize(
@@ -96,7 +96,7 @@ def test__get_topic_data(influxdb_client, reduct_client, start_ts, stop_ts):
     assert data == expected
 
     influxdb_client.query_data.assert_called_with(
-        "topic", "2022-01-01T00:00:00Z", "2022-01-01T00:00:00Z", fields="status"
+        "topic", 1640991600, 1640991600, fields="status"
     )
     reduct_client.check_package_list.assert_called_with(expected)
 
@@ -126,7 +126,7 @@ def test__get_metrics(influxdb_client, start_ts, stop_ts):
 
     influxdb_client.query_data.assert_called_with(
         "topic",
-        "2022-01-01T00:00:00Z",
-        "2022-01-01T00:00:00Z",
+        1640991600,
+        1640991600,
         fields=["field_1", "field_2"],
     )

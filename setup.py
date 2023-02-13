@@ -56,7 +56,7 @@ setup(
         "paho-mqtt==1.6.1",
         "numpy==1.23.1",
         "deprecation==2.1.0",
-        "reduct-py~=1.2",
+        "reduct-py~=1.3",
     ],
     extras_require={
         "test": ["pytest==7.1.2", "pytest-mock==3.8.2"],

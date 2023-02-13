@@ -5,7 +5,7 @@ from reduct import ServerInfo, BucketSettings, Bucket, EntryInfo
 from reduct.bucket import Record
 from reduct.client import Defaults, Client
 
-from drift_client.reduct_client import ReductStorageClient
+from drift_client.reduct_client import ReductStoreClient
 
 
 @pytest.fixture(name="bucket")
@@ -38,7 +38,7 @@ def _make_reduct_client(mocker, bucket):
 def test__check_server_available():
     """should check if server is available"""
     with pytest.raises(Exception):
-        _ = ReductStorageClient("http://localhost:8383", "password")
+        _ = ReductStoreClient("http://localhost:8383", "password")
 
 
 @pytest.mark.usefixtures("reduct_client")
@@ -55,7 +55,7 @@ def test__check_packages_names_available(bucket):
         )
     ]
 
-    client = ReductStorageClient("http://localhost:8383", "password")
+    client = ReductStoreClient("http://localhost:8383", "password")
     assert client.check_package_list(
         ["topic/1.dp", "topic/2.dp", "topic/3.dp", "topic/4.dp"]
     ) == ["topic/2.dp", "topic/3.dp"]
@@ -74,7 +74,13 @@ def test__fetch_package(mocker, bucket):
             yield data
 
         return Record(
-            timestamp=timestamp, size=len(data), last=True, read_all=read_all, read=read
+            timestamp=timestamp,
+            size=len(data),
+            last=True,
+            read_all=read_all,
+            read=read,
+            content_type="",
+            labels={},
         )
 
     ctx = mocker.MagicMock()
@@ -82,5 +88,5 @@ def test__fetch_package(mocker, bucket):
     ctx.__aexit__.return_value = mocker.Mock()
     bucket.read.return_value = ctx
 
-    client = ReductStorageClient("http://localhost:8383", "password")
+    client = ReductStoreClient("http://localhost:8383", "password")
     assert client.fetch_data("topic/1.dp") == b"test"
