@@ -46,7 +46,7 @@ def test__default_initialization(influxdb_klass, reduct_klass):
     )
 
 
-def test__minio_password_required(minio_klass, reduct_klass):
+def test__minio_password_required():
     """should raise error if no password is not provided"""
     with pytest.raises(ValueError):
         _ = DriftClient("host_name", None)
