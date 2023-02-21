@@ -11,6 +11,7 @@ from typing import Dict, List, Callable, Union, Any, Optional
 
 import deprecation
 from google.protobuf.message import DecodeError
+from reduct import ReductError
 
 from drift_client.drift_data_package import DriftDataPackage
 from drift_client.influxdb_client import InfluxDBClient
@@ -54,6 +55,8 @@ class DriftClient:
             mqtt_port (int): MQTT port. Default: 1883
             loop: asyncio loop for integration into async code
         """
+        if password is None or password == "":
+            raise ValueError("Password is required")
 
         user = kwargs["user"] if "user" in kwargs else "panda"
         org = kwargs["org"] if "org" in kwargs else "panda"
@@ -65,6 +68,11 @@ class DriftClient:
         )
         mqtt_port = kwargs["mqtt_port"] if "mqtt_port" in kwargs else 1883
         loop = kwargs["loop"] if "loop" in kwargs else None
+
+        self._mqtt_client = MQTTClient(
+            f"mqtt://{host}:{mqtt_port}",
+            client_id=f"drift_client_{int(time.time() * 1000)}",
+        )
 
         self._influx_client = InfluxDBClient(
             f"{('https://' if secure else 'http://')}{host}:{influx_port}",
@@ -79,18 +87,22 @@ class DriftClient:
                 password,
                 loop,
             )
-        except Exception:  # pylint: disable=broad-except
-            # Minio as fallback if reduct storage is not available
-            self._blob_storage = MinIOClient(
-                f"{('https://' if secure else 'http://')}{host}:{minio_port}",
-                user,
-                password,
-                False,
-            )  # TBD!!! --> SSL handling!
-        self._mqtt_client = MQTTClient(
-            f"mqtt://{host}:{mqtt_port}",
-            client_id=f"drift_client_{int(time.time() * 1000)}",
-        )
+            return
+        except ReductError as err:  # pylint: disable=broad-except
+            if err.status_code == 599:
+                logger.warning(
+                    "ReductStore not available. Using MinIO Storage instead."
+                )
+            else:
+                raise err
+
+        # Minio as fallback if ReductStore is not available
+        self._blob_storage = MinIOClient(
+            f"{('https://' if secure else 'http://')}{host}:{minio_port}",
+            user,
+            password,
+            False,
+        )  # TBD!!! --> SSL handling!
 
     def get_topics(self) -> List[str]:
         """Returns list of topics (measurements in InfluxDB)
