@@ -2,6 +2,7 @@
 from datetime import datetime
 
 import pytest
+from reduct import ReductError
 
 from drift_client import DriftClient
 
@@ -45,10 +46,16 @@ def test__default_initialization(influxdb_klass, reduct_klass):
     )
 
 
+def test__minio_password_required():
+    """should raise error if no password is not provided"""
+    with pytest.raises(ValueError):
+        _ = DriftClient("host_name", None)
+
+
 @pytest.mark.usefixtures("minio_klass")
 def test__minio_fallback(reduct_klass, minio_klass):
-    """should initialize minio client if reduct storage is not available"""
-    reduct_klass.side_effect = Exception("Boom")
+    """should initialize minio client if ReductStore is not available"""
+    reduct_klass.side_effect = ReductError(599, "Connection error")
 
     _ = DriftClient("host_name", "password")
     minio_klass.assert_called_with("http://host_name:9000", "panda", "password", False)
