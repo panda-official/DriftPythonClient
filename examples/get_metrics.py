@@ -14,8 +14,8 @@ def main():
     drift_client = DriftClient("drift-test-rig.local", os.getenv("DRIFT_PASSWORD"))
     metrics = drift_client.get_metrics(
         "energy-distr-1",
-        start=datetime.datetime.utcnow() - datetime.timedelta(minutes=15),
-        stop=datetime.datetime.utcnow(),
+        start=datetime.datetime.now() - datetime.timedelta(minutes=15),
+        stop=datetime.datetime.now(),
         names=["d1", "d2"],
     )
 

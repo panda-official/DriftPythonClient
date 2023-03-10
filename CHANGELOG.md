@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Empty password and error message when no ReductStore available, [PR-30](https://github.com/panda-official/DriftPythonClient/pull/30)
 
-### 0.4.0 - 2023-02-13
+## 0.4.0 - 2023-02-13
 
 ### Added:
 
