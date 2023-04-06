@@ -7,8 +7,8 @@ from setuptools import setup, find_packages
 
 PACKAGE_NAME = "drift-python-client"
 MAJOR_VERSION = 0
-MINOR_VERSION = 4
-PATCH_VERSION = 1
+MINOR_VERSION = 5
+PATCH_VERSION = 0
 VERSION_SUFFIX = os.getenv("VERSION_SUFFIX")
 
 HERE = Path(__file__).parent.resolve()
@@ -52,7 +52,7 @@ setup(
     install_requires=[
         "influxdb-client==1.30.0",
         "drift-protocol>=0.3.0, <1.0",
-        "wavelet-buffer>=0.4.0, <1.0",
+        "wavelet-buffer>=0.6.0, <1.0",
         "paho-mqtt==1.6.1",
         "numpy==1.23.1",
         "deprecation==2.1.0",
