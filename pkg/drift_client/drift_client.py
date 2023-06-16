@@ -7,7 +7,7 @@ Drift Client Module for easy access to Compute Devices on the Drift Platform
 import logging
 import time
 from datetime import datetime
-from typing import Dict, List, Callable, Union, Any, Optional
+from typing import Dict, List, Callable, Union, Any, Optional, Iterator
 
 import deprecation
 from google.protobuf.message import DecodeError
@@ -212,6 +212,40 @@ class DriftClient:
         """
         blob = self._blob_storage.fetch_data(path)
         return DriftDataPackage(blob)
+
+    def walk(
+        self,
+        topic: str,
+        start: Union[float, datetime, str],
+        stop: Union[float, datetime, str],
+    ) -> Iterator[DriftDataPackage]:
+        """Walks through history data for selected topic
+
+        Args:
+            topic: Topic name
+            start: Begin of request timeframe,
+                Format: ISO string, datetime or float timestamp
+            stop: End of request timeframe,
+                Format: ISO string, datetime or float timestamp
+
+        Returns:
+            Iterator with DriftDataPackage
+
+        Examples:
+            >>> client = DriftClient("127.0.0.1", "PASSWORD")
+            >>> for pkg in  client.walk("topic-1", "2022-02-03 10:00:00", "2022-02-03 10:00:10")
+            >>>     print(pkg)
+        """
+
+        if self._blob_storage.name() == "minio":
+            packages = self.get_package_names(topic, start, stop)
+            for package in packages:
+                yield self.get_item(package)
+        else:
+            start = _convert_type(start)
+            stop = _convert_type(stop)
+            for package in self._blob_storage.walk(topic, start, stop):
+                yield DriftDataPackage(package)
 
     def subscribe_data(self, topic: str, handler: Callable[[DriftDataPackage], None]):
         """Subscribes to selected topic from initialised Device

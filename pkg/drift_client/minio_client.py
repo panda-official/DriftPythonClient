@@ -70,3 +70,6 @@ class MinIOClient:
                 response.release_conn()
 
         return data
+
+    def name(self):
+        return "minio"
