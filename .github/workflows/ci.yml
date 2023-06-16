@@ -54,8 +54,8 @@ jobs:
       - name: Remove system protobuf
         run:  sudo apt-get remove -y python3-protobuf
 
-      - name: Install package
-        run:  pip3 install dist/*
+#      - name: Install package
+#        run:  pip3 install dist/*
 
       - name: Install dependencies
         run: pip3 install .[test]
