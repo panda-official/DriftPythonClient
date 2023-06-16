@@ -72,4 +72,5 @@ class MinIOClient:
         return data
 
     def name(self):
+        """Return name of client"""
         return "minio"

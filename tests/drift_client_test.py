@@ -126,7 +126,7 @@ def test__walk_data(influxdb_client, reduct_client):
 
     reduct_client.walk.return_value = Iter([b"", b""])
 
-    data = [pkg for pkg in client.walk("topic", 0.0, 1.0)]
+    data = list(client.walk("topic", 0.0, 1.0))
     assert len(data) == 2
 
     influxdb_client.query_data.assert_not_called()

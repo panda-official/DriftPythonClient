@@ -1,10 +1,11 @@
 """Reduct Storage client"""
 import asyncio
-from typing import Tuple, List, Optional, Dict, Iterator, AsyncIterator
 from asyncio import new_event_loop
+from typing import Tuple, List, Optional, Dict, Iterator
+
+from reduct import Client, Bucket, ReductError, EntryInfo
 
 from drift_client.error import DriftClientError
-from reduct import Client, Bucket, ReductError, EntryInfo
 
 
 class ReductStoreClient:
@@ -84,7 +85,7 @@ class ReductStoreClient:
 
         async def get_next():
             try:
-                pkg = await ait.__anext__()
+                pkg = await ait.__anext__()  # pylint: disable=unnecessary-dunder-call
                 return False, await pkg.read_all()
             except StopAsyncIteration:
                 return True, None
@@ -99,6 +100,7 @@ class ReductStoreClient:
             raise DriftClientError(f"Failed to fetch data: {err.message}") from err
 
     def name(self) -> str:
+        """Return name of the client"""
         return "reductstore"
 
     async def _read_by_timestamp(self, entry: str, timestamp: int) -> bytes:

@@ -106,20 +106,21 @@ def test__fetch_package_not_found(bucket):
 
     items = [b"1", b"2", b"3", b"4", b"5"]
 
-    async def iter():
-        class Rec:
+    async def _iter():
+        class _Rec:  # pylint: disable=too-few-public-methods
             def __init__(self, data):
                 self.data = data
 
             async def read_all(self):
+                """read all data"""
                 return self.data
 
         for item in items:
-            yield Rec(item)
+            yield _Rec(item)
 
-    bucket.query.return_value = iter()
+    bucket.query.return_value = _iter()
 
     client = ReductStoreClient("http://localhost:8383", "password")
-    assert [blob for blob in client.walk("topic", 0, 1)] == items
+    assert list(client.walk("topic", 0, 1)) == items
 
     bucket.query.assert_called_with("topic", 0, 1000_000, ttl=60)

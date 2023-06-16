@@ -233,7 +233,8 @@ class DriftClient:
 
         Examples:
             >>> client = DriftClient("127.0.0.1", "PASSWORD")
-            >>> for pkg in  client.walk("topic-1", "2022-02-03 10:00:00", "2022-02-03 10:00:10")
+            >>> for pkg in  client.walk("topic-1", "2022-02-03 10:00:00",
+                "2022-02-03 10:00:10")
             >>>     print(pkg)
         """
 
