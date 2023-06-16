@@ -1,0 +1,78 @@
+[build-system]
+requires = ["setuptools>=40.8.0", "wheel"]
+
+[project]
+
+name = "drift-python-client"
+version = "0.6.0"
+description = "Python Client to access data of PANDA|Drift"
+requires-python = ">=3.8"
+readme = "README.md"
+license = { file = "LICENSE" }
+keywords = ["drift", "api", "edge-computing", "data", "cli"]
+authors = [
+    { name = "PANDA, GmbH", email = "info@panda.technology" }
+]
+maintainers = [
+    { name = "PANDA, GmbH", email = "info@panda.technology" }
+]
+
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python :: 3 :: Only",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "Operating System :: OS Independent",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Software Development :: Libraries",
+    "License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)",
+]
+
+dependencies = [
+    "influxdb-client>=1.36.1, <2.0.0",
+    "drift-protocol>=0.5.0, <1.0.0",
+    "wavelet-buffer >= 0.6.0, <1.0.0",
+    "paho-mqtt >= 1.6.1, <2.0.0",
+    "numpy >= 1.24.3, < 2.0.0",
+    "deprecation==2.1.0",
+    "reduct-py >= 1.4, <2.0.0",
+    "minio==7.1.10"
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest>=7.3.2, <8.0.0",
+    "pytest-mock>=3.11, <4.0.0",
+]
+lint = [
+    "pylint>=2.17.4, <3.0.0",
+    "pylint-protobuf>=0.20.2, <1.0.0",
+]
+format = [
+    "black[jypyter]>=23.3.0",
+]
+docs = [
+    "mkdocs>=1.4.3, <2.0.0",
+    "mkdocs-material>=9.1.16, <10.0.0",
+    "plantuml-markdown>=3.9.1, <4.0.0",
+    "mkdocstrings[python]~=0.22",
+    "mkdocs-jupyter~=0.24",
+]
+
+[project.urls]
+Homepage = "https://driftpythonclient.readthedocs.io/en/latest/"
+Documentation = "https://driftpythonclient.readthedocs.io/en/latest/"
+Source = "https://github.com/panda-official/DriftPythonClient"
+Changelog = "https://github.com/panda-official/DriftPythonClient/blob/develop/CHANGELOG.md"
+
+
+[tool.pylint]
+max-line-length = 88
+load-plugins="pylint_protobuf"
+good-names = "dt"
+
+[tool.setuptools]
+package-dir = {"" = "pkg"}
+
+[tool.setuptools.packages.find]
+where = ["pkg"]
