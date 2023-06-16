@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - DRIFT-613: `Client.walk` method to iterate data in blob storage, [PR-32](https://github.com/panda-official/DriftPythonClient/pull/32)
 
+
+### Changed:
+
+- Migrate to pyproject.toml, [PR-33](https://github.com/panda-official/DriftPythonClient/pull/33)
+
 ## 0.5.0 - 2023-04-06
 
 ### Changed

@@ -34,7 +34,7 @@ jobs:
         run: pip3 install .
 
       - name: Build package
-        run: python3 setup.py bdist_wheel
+        run: pipx run build --wheel
 
       - uses: actions/upload-artifact@master
         with:
