@@ -1,11 +1,9 @@
+import datetime
+import logging
 import os
-from datetime import timezone
+import sys
 
 from drift_client import DriftClient
-
-import logging
-import sys
-import datetime
 
 logging.basicConfig(level=logging.INFO)
 

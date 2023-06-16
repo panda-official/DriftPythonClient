@@ -1,14 +1,15 @@
 """Reduct Storage client"""
 import asyncio
-from typing import Tuple, List, Optional, Dict
 from asyncio import new_event_loop
+from typing import Tuple, List, Optional, Dict, Iterator
+
+from reduct import Client, Bucket, ReductError, EntryInfo
 
 from drift_client.error import DriftClientError
-from reduct import Client, Bucket, ReductError, EntryInfo
 
 
 class ReductStoreClient:
-    """Wrapper around Reduct Storage client"""
+    """Wrapper around ReductStore client"""
 
     def __init__(self, url: str, token: str, loop=None):
         """
@@ -68,6 +69,39 @@ class ReductStoreClient:
             return self._run(self._read_by_timestamp(entry, timestamp))
         except ReductError as err:
             raise DriftClientError(f"Could not read item at {path}") from err
+
+    def walk(self, entry: str, start: int, stop: int) -> Iterator[bytes]:
+        """
+        Walk through the records of an entry between start and stop.
+        Args:
+            entry: entry name
+            start: start timestamp UNIX in seconds
+            stop: stop timestamp UNIX in seconds
+        """
+
+        bucket: Bucket = self._run(self._client.get_bucket(self._bucket))
+
+        ait = bucket.query(entry, start * 1000_000, stop * 1000_000, ttl=60)
+
+        async def get_next():
+            try:
+                pkg = await ait.__anext__()  # pylint: disable=unnecessary-dunder-call
+                return False, await pkg.read_all()
+            except StopAsyncIteration:
+                return True, None
+
+        try:
+            while True:
+                done, pkg = self._run(get_next())
+                if done:
+                    break
+                yield pkg
+        except ReductError as err:
+            raise DriftClientError(f"Failed to fetch data: {err.message}") from err
+
+    def name(self) -> str:
+        """Return name of the client"""
+        return "reductstore"
 
     async def _read_by_timestamp(self, entry: str, timestamp: int) -> bytes:
         bucket: Bucket = await self._client.get_bucket(self._bucket)

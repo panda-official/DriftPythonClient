@@ -1,10 +1,22 @@
 """Tests for DriftClient"""
 from datetime import datetime
+from typing import Optional, List, Any
 
 import pytest
 from reduct import ReductError
 
 from drift_client import DriftClient
+
+
+class Iter:  # pylint: disable=too-few-public-methods
+    """Helper class for efficient mocking"""
+
+    def __init__(self, items: Optional[List[Any]] = None):
+        self.items = items if items else []
+
+    def __iter__(self):
+        for item in self.items:
+            yield item
 
 
 @pytest.fixture(name="minio_klass")
@@ -106,6 +118,19 @@ def test__get_topic_data(influxdb_client, reduct_client, start_ts, stop_ts):
         "topic", 1640991600, 1640991600, fields="status"
     )
     reduct_client.check_package_list.assert_called_with(expected)
+
+
+def test__walk_data(influxdb_client, reduct_client):
+    """should iteratre data in reductstore and return it like a list of dictioniers"""
+    client = DriftClient("host_name", "password")
+
+    reduct_client.walk.return_value = Iter([b"", b""])
+
+    data = list(client.walk("topic", 0.0, 1.0))
+    assert len(data) == 2
+
+    influxdb_client.query_data.assert_not_called()
+    influxdb_client.walk.called_with("topic", 0, 1)
 
 
 @pytest.mark.usefixtures("reduct_klass")
