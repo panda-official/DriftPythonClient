@@ -1,4 +1,5 @@
 """Reduct Storage Client"""
+from typing import Optional, List, Any
 
 import pytest
 from reduct import ServerInfo, BucketSettings, Bucket, EntryInfo
@@ -6,6 +7,13 @@ from reduct.bucket import Record
 from reduct.client import Defaults, Client
 
 from drift_client.reduct_client import ReductStoreClient
+
+
+class AsyncIter:  # pylint: disable=too-few-public-methods
+    """Helper class for efficient mocking"""
+
+    def __init__(self, items: Optional[List[Any]] = None):
+        self.items = items if items else []
 
 
 @pytest.fixture(name="bucket")
@@ -90,3 +98,28 @@ def test__fetch_package(mocker, bucket):
 
     client = ReductStoreClient("http://localhost:8383", "password")
     assert client.fetch_data("topic/1.dp") == b"test"
+
+
+@pytest.mark.usefixtures("reduct_client")
+def test__fetch_package_not_found(bucket):
+    """should walk records"""
+
+    items = [b"1", b"2", b"3", b"4", b"5"]
+
+    async def iter():
+        class Rec:
+            def __init__(self, data):
+                self.data = data
+
+            async def read_all(self):
+                return self.data
+
+        for item in items:
+            yield Rec(item)
+
+    bucket.query.return_value = iter()
+
+    client = ReductStoreClient("http://localhost:8383", "password")
+    assert [blob for blob in client.walk("topic", 0, 1)] == items
+
+    bucket.query.assert_called_with("topic", 0, 1000_000, ttl=60)
