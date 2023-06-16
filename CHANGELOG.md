@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 0.6.0 - 2023-06-16
+
 ### Added:
 
 - DRIFT-613: `Client.walk` method to iterate data in blob storage, [PR-32](https://github.com/panda-official/DriftPythonClient/pull/32)
