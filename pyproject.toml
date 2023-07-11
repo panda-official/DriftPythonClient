@@ -35,7 +35,7 @@ dependencies = [
     "paho-mqtt >= 1.6.1, <2.0.0",
     "numpy >= 1.24.3, < 2.0.0",
     "deprecation==2.1.0",
-    "reduct-py >= 1.4, <2.0.0",
+    "reduct-py >= 1.5, <2.0.0",
     "minio==7.1.10"
 ]
 
