@@ -47,6 +47,13 @@ def _make_good_package(buffer: WaveletBuffer) -> DriftPackage:
     any_msg.Pack(payload)
 
     pkg.data.append(any_msg)
+
+    label = DriftPackage.Label()
+    label.key = "key"
+    label.value = "value"
+
+    pkg.labels.append(label)
+
     return pkg
 
 
@@ -71,3 +78,9 @@ def test__scale_factor(good_package, signal):
     """Should return scaled data"""
     pkg = DriftDataPackage(good_package.SerializeToString())
     assert len(pkg.as_np(scale_factor=1)) == int(len(signal) / 2)
+
+
+def test__labels(good_package):
+    """Should provide access to labels"""
+    pkg = DriftDataPackage(good_package.SerializeToString())
+    assert pkg.labels == {"key": "value"}

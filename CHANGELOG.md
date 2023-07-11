@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Added
+
+- Support for labels, [PR-34](https://github.com/panda-official/DriftPythonClient/pull/34)
+
 ## 0.6.0 - 2023-06-16
 
 ### Added:

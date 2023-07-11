@@ -1,5 +1,5 @@
 """Wrapper around DriftPackage"""
-from typing import Optional
+from typing import Optional, Dict
 
 from wavelet_buffer import WaveletBuffer  # pylint: disable=no-name-in-module
 from drift_protocol.common import DataPayload, DriftPackage, StatusCode
@@ -130,3 +130,12 @@ class DriftDataPackage:  # pylint: disable=no-member
             Data payload as NumPy Array
         """
         return self.as_buffer().compose(scale_factor)
+
+    @property
+    def labels(self) -> Dict[str, str]:
+        """Labels as dict"""
+        labels = {}
+        for label in self._pkg.labels:
+            labels[label.key] = label.value
+
+        return labels
