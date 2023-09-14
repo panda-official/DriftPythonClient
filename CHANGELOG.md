@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 0.8.1 - 2023-09-14
+
 ### Fixed
 
 - Only time series data supported, [PR-36](https://github.com/panda-official/DriftPythonClient/pull/36)
