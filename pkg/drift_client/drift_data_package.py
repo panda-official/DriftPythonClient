@@ -1,6 +1,7 @@
 """Wrapper around DriftPackage"""
 from typing import Optional, Dict
 
+from drift_bytes import Variant, InputBuffer
 from wavelet_buffer import WaveletBuffer  # pylint: disable=no-name-in-module
 from drift_protocol.common import DataPayload, DriftPackage, StatusCode
 from drift_protocol.meta import MetaInfo
@@ -117,8 +118,26 @@ class DriftDataPackage:  # pylint: disable=no-member
         Returns:
             Data payload as Wavelet Buffer
         """
-        payload = self.as_raw()
-        return WaveletBuffer.parse(payload)
+        if self.meta.type != MetaInfo.TIME_SERIES:
+            raise ValueError("Only time series data supported")
+
+        return WaveletBuffer.parse(self.as_raw())
+
+    @check_status
+    def as_typed_data(self) -> Dict[str, Optional[Variant.SUPPORTED_TYPES]]:
+        if self.meta.type != MetaInfo.TYPED_DATA:
+            raise ValueError("Only typed data supported")
+
+        buffer = InputBuffer(self.as_raw())
+        data = {}
+        for item in self.meta.typed_data_info.items:
+            value = buffer.pop()
+            if item.status == StatusCode.GOOD:
+                data[item.name] = value.value
+            else:
+                data[item.name] = None
+
+        return data
 
     @check_status
     def as_np(self, scale_factor: int = 0) -> np.ndarray:
