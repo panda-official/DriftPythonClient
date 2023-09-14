@@ -118,9 +118,6 @@ class DriftDataPackage:  # pylint: disable=no-member
         Returns:
             Data payload as Wavelet Buffer
         """
-        if self.meta.type != MetaInfo.TIME_SERIES:
-            raise ValueError("Only time series data supported")
-
         return WaveletBuffer.parse(self.as_raw())
 
     @check_status
