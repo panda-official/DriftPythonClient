@@ -4,17 +4,17 @@ from typing import Dict
 # pylint: disable=no-member
 import numpy as np
 import pytest
+from google.protobuf.any_pb2 import Any  # pylint: disable=no-name-in-module)
+
 from drift_bytes import Variant, OutputBuffer
 from drift_protocol.meta import TypedDataInfo, MetaInfo
+from drift_protocol.common import DriftPackage, StatusCode, DataPayload
+from drift_client import DriftDataPackage
 from wavelet_buffer import (  # pylint: disable=no-name-in-module
     WaveletBuffer,
     WaveletType,
     denoise,
 )
-from drift_protocol.common import DriftPackage, StatusCode, DataPayload
-from google.protobuf.any_pb2 import Any  # pylint: disable=no-name-in-module)
-
-from drift_client import DriftDataPackage
 
 
 @pytest.fixture(name="signal")
