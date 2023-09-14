@@ -125,6 +125,7 @@ class DriftDataPackage:  # pylint: disable=no-member
 
     @check_status
     def as_typed_data(self) -> Dict[str, Optional[Variant.SUPPORTED_TYPES]]:
+        """Data payload as typed data"""
         if self.meta.type != MetaInfo.TYPED_DATA:
             raise ValueError("Only typed data supported")
 
