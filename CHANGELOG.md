@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 0.9.0 - 2023-12-14
+
 ## Added
 
 - TTL option to `DriftClient.walk` method, [PR-38](https://github.com/panda-official/DriftPythonClient/pull/38)
