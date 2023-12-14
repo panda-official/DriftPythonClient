@@ -52,11 +52,11 @@ def test__check_server_available():
 
 @pytest.fixture(name="drift_client")
 def _make_drift_client(reduct_client):
+    _ = reduct_client
     return ReductStoreClient("http://localhost:8383", "password")
 
 
-@pytest.mark.usefixtures("reduct_client")
-def test__check_packages_names_available(bucket):
+def test__check_packages_names_available(bucket, drift_client):
     """should check if server is available"""
     bucket.get_entry_list.return_value = [
         EntryInfo(
@@ -69,11 +69,10 @@ def test__check_packages_names_available(bucket):
         )
     ]
 
-    client = ReductStoreClient("http://localhost:8383", "password")
-    assert client.check_package_list(
+    assert drift_client.check_package_list(
         ["topic/1.dp", "topic/2.dp", "topic/3.dp", "topic/4.dp"]
     ) == ["topic/2.dp", "topic/3.dp"]
-    assert client.check_package_list(["unknown/3.dp", "unknown/4.dp"]) == []
+    assert drift_client.check_package_list(["unknown/3.dp", "unknown/4.dp"]) == []
 
 
 def test__fetch_package(mocker, bucket, drift_client):
