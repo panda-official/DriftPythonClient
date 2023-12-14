@@ -86,18 +86,20 @@ class ReductStoreClient:
         async def get_next():
             try:
                 pkg = await ait.__anext__()  # pylint: disable=unnecessary-dunder-call
-                return False, await pkg.read_all()
+                return await pkg.read_all()
             except StopAsyncIteration:
-                return True, None
+                return None
 
         try:
             while True:
-                done, pkg = self._run(get_next())
-                if done:
+                pkg = self._run(get_next())
+                if pkg is None:
                     break
                 yield pkg
         except ReductError as err:
-            raise DriftClientError(f"Failed to fetch data: {err.message}") from err
+            raise DriftClientError(
+                f"Failed to fetch data from {entry}: {err.message}"
+            ) from err
 
     def name(self) -> str:
         """Return name of the client"""
