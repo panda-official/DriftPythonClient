@@ -28,13 +28,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Update pip
-        run: python3 -m pip install --no-cache --upgrade pip setuptools wheel
+        run: python3 -m pip install --no-cache --upgrade pip setuptools wheel build
 
       - name: Install dependencies
         run: pip3 install .
 
       - name: Build package
-        run: pipx run build --wheel
+        run: python3 -m build --wheel
 
       - uses: actions/upload-artifact@master
         with:
