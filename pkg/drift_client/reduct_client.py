@@ -77,6 +77,8 @@ class ReductStoreClient:
             entry: entry name
             start: start timestamp UNIX in seconds
             stop: stop timestamp UNIX in seconds
+        Raises:
+            DriftClientError: if failed to fetch data
         """
 
         bucket: Bucket = self._run(self._client.get_bucket(self._bucket))

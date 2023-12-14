@@ -230,6 +230,8 @@ class DriftClient:
 
         Returns:
             Iterator with DriftDataPackage
+        Raises:
+            DriftClientError: if failed to fetch data
 
         Examples:
             >>> client = DriftClient("127.0.0.1", "PASSWORD")
