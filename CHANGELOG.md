@@ -7,9 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## Added
+
+- TTL option to `DriftClient.walk` method, [PR-38](https://github.com/panda-official/DriftPythonClient/pull/38)
+
 ### Fixed
 
-- Error handling in DriftClient.walk, [PR-37](https://github.com/panda-official/DriftPythonClient/pull/37)
+- Error handling in `DriftClient.walk`, [PR-37](https://github.com/panda-official/DriftPythonClient/pull/37)
 
 ## 0.8.1 - 2023-09-14
 
