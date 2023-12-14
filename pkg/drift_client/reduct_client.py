@@ -70,20 +70,23 @@ class ReductStoreClient:
         except ReductError as err:
             raise DriftClientError(f"Could not read item at {path}") from err
 
-    def walk(self, entry: str, start: int, stop: int) -> Iterator[bytes]:
+    def walk(self, entry: str, start: int, stop: int, **kwargs) -> Iterator[bytes]:
         """
         Walk through the records of an entry between start and stop.
         Args:
             entry: entry name
             start: start timestamp UNIX in seconds
             stop: stop timestamp UNIX in seconds
+        Keyword Args:
+            ttl: time to live for the query
         Raises:
             DriftClientError: if failed to fetch data
         """
 
         bucket: Bucket = self._run(self._client.get_bucket(self._bucket))
 
-        ait = bucket.query(entry, start * 1000_000, stop * 1000_000, ttl=60)
+        ttl = kwargs.get("ttl", 60)
+        ait = bucket.query(entry, start * 1000_000, stop * 1000_000, ttl=ttl)
 
         async def get_next():
             try:

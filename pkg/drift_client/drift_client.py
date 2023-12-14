@@ -218,6 +218,7 @@ class DriftClient:
         topic: str,
         start: Union[float, datetime, str],
         stop: Union[float, datetime, str],
+        **kwargs,
     ) -> Iterator[DriftDataPackage]:
         """Walks through history data for selected topic
 
@@ -227,7 +228,8 @@ class DriftClient:
                 Format: ISO string, datetime or float timestamp
             stop: End of request timeframe,
                 Format: ISO string, datetime or float timestamp
-
+        KwArgs:
+            ttl: Time to live for the query only for ReductStore
         Returns:
             Iterator with DriftDataPackage
         Raises:
@@ -247,7 +249,7 @@ class DriftClient:
         else:
             start = _convert_type(start)
             stop = _convert_type(stop)
-            for package in self._blob_storage.walk(topic, start, stop):
+            for package in self._blob_storage.walk(topic, start, stop, **kwargs):
                 yield DriftDataPackage(package)
 
     def subscribe_data(self, topic: str, handler: Callable[[DriftDataPackage], None]):
