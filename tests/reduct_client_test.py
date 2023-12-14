@@ -50,6 +50,11 @@ def test__check_server_available():
         _ = ReductStoreClient("http://localhost:8383", "password")
 
 
+@pytest.fixture(name="drift_client")
+def _make_drift_client(reduct_client):
+    return ReductStoreClient("http://localhost:8383", "password")
+
+
 @pytest.mark.usefixtures("reduct_client")
 def test__check_packages_names_available(bucket):
     """should check if server is available"""
@@ -71,8 +76,7 @@ def test__check_packages_names_available(bucket):
     assert client.check_package_list(["unknown/3.dp", "unknown/4.dp"]) == []
 
 
-@pytest.mark.usefixtures("reduct_client")
-def test__fetch_package(mocker, bucket):
+def test__fetch_package(mocker, bucket, drift_client):
     """should fetch package from reduct storage"""
 
     def make_record(timestamp: int, data: bytes) -> Record:
@@ -97,8 +101,7 @@ def test__fetch_package(mocker, bucket):
     ctx.__aexit__.return_value = mocker.Mock()
     bucket.read.return_value = ctx
 
-    client = ReductStoreClient("http://localhost:8383", "password")
-    assert client.fetch_data("topic/1.dp") == b"test"
+    assert drift_client.fetch_data("topic/1.dp") == b"test"
 
 
 class _Rec:  # pylint: disable=too-few-public-methods
@@ -110,8 +113,7 @@ class _Rec:  # pylint: disable=too-few-public-methods
         return self.data
 
 
-@pytest.mark.usefixtures("reduct_client")
-def test__walk_records(bucket):
+def test__walk_records(bucket, drift_client):
     """should walk records"""
 
     items = [b"1", b"2", b"3", b"4", b"5"]
@@ -122,14 +124,12 @@ def test__walk_records(bucket):
 
     bucket.query.return_value = _iter()
 
-    client = ReductStoreClient("http://localhost:8383", "password")
-    assert list(client.walk("topic", 0, 1)) == items
+    assert list(drift_client.walk("topic", 0, 1)) == items
 
     bucket.query.assert_called_with("topic", 0, 1000_000, ttl=60)
 
 
-@pytest.mark.usefixtures("reduct_client")
-def test___walk_with_error(bucket):
+def test___walk_with_error(bucket, drift_client):
     """should raise error if failed to walk records"""
 
     async def _iter():
@@ -137,6 +137,16 @@ def test___walk_with_error(bucket):
         raise ReductError(400, "test")
 
     bucket.query.return_value = _iter()
-    client = ReductStoreClient("http://localhost:8383", "password")
     with pytest.raises(DriftClientError):
-        list(client.walk("topic", 0, 1))
+        list(drift_client.walk("topic", 0, 1))
+
+
+def test___walk_with_ttl(bucket, drift_client):
+    """should walk records with ttl"""
+
+    async def _iter():
+        yield _Rec(b"1")
+
+    bucket.query.return_value = _iter()
+    list(drift_client.walk("topic", 0, 1, ttl=10))
+    bucket.query.assert_called_with("topic", 0, 1000_000, ttl=10)
