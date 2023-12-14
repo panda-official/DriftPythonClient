@@ -2,10 +2,11 @@
 from typing import Optional, List, Any
 
 import pytest
-from reduct import ServerInfo, BucketSettings, Bucket, EntryInfo
+from reduct import ServerInfo, BucketSettings, Bucket, EntryInfo, ReductError
 from reduct.bucket import Record
 from reduct.client import Defaults, Client
 
+from drift_client.error import DriftClientError
 from drift_client.reduct_client import ReductStoreClient
 
 
@@ -100,21 +101,22 @@ def test__fetch_package(mocker, bucket):
     assert client.fetch_data("topic/1.dp") == b"test"
 
 
+class _Rec:  # pylint: disable=too-few-public-methods
+    def __init__(self, data):
+        self.data = data
+
+    async def read_all(self):
+        """read all data"""
+        return self.data
+
+
 @pytest.mark.usefixtures("reduct_client")
-def test__fetch_package_not_found(bucket):
+def test__walk_records(bucket):
     """should walk records"""
 
     items = [b"1", b"2", b"3", b"4", b"5"]
 
     async def _iter():
-        class _Rec:  # pylint: disable=too-few-public-methods
-            def __init__(self, data):
-                self.data = data
-
-            async def read_all(self):
-                """read all data"""
-                return self.data
-
         for item in items:
             yield _Rec(item)
 
@@ -124,3 +126,17 @@ def test__fetch_package_not_found(bucket):
     assert list(client.walk("topic", 0, 1)) == items
 
     bucket.query.assert_called_with("topic", 0, 1000_000, ttl=60)
+
+
+@pytest.mark.usefixtures("reduct_client")
+def test___walk_with_error(bucket):
+    """should raise error if failed to walk records"""
+
+    async def _iter():
+        yield _Rec(b"1")
+        raise ReductError(400, "test")
+
+    bucket.query.return_value = _iter()
+    client = ReductStoreClient("http://localhost:8383", "password")
+    with pytest.raises(DriftClientError):
+        list(client.walk("topic", 0, 1))
