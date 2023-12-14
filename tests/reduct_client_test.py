@@ -128,7 +128,7 @@ def test__walk_records(bucket, drift_client):
     bucket.query.assert_called_with("topic", 0, 1000_000, ttl=60)
 
 
-def test___walk_with_error(bucket, drift_client):
+def test__walk_with_error(bucket, drift_client):
     """should raise error if failed to walk records"""
 
     async def _iter():
@@ -140,7 +140,7 @@ def test___walk_with_error(bucket, drift_client):
         list(drift_client.walk("topic", 0, 1))
 
 
-def test___walk_with_ttl(bucket, drift_client):
+def test__walk_with_ttl(bucket, drift_client):
     """should walk records with ttl"""
 
     async def _iter():
