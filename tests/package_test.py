@@ -1,4 +1,5 @@
 """Tests for Package"""
+
 from typing import Dict
 
 # pylint: disable=no-member

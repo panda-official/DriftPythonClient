@@ -1,4 +1,5 @@
 """Tests for DriftClient"""
+
 from datetime import datetime
 from typing import Optional, List, Any
 
@@ -52,9 +53,9 @@ def test__default_initialization(influxdb_klass, reduct_klass):
     """should initialize clients with default settings"""
     _ = DriftClient("host_name", "password")
 
-    reduct_klass.assert_called_with("http://host_name:8383", "password", None)
+    reduct_klass.assert_called_with("http://host_name:8383", "password", 30, None)
     influxdb_klass.assert_called_with(
-        "http://host_name:8086", "panda", "password", False
+        "http://host_name:8086", "panda", "password", False, 30
     )
 
 

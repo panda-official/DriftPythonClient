@@ -1,4 +1,5 @@
 """InfluxDB Client"""
+
 from datetime import datetime
 
 import pytest
@@ -46,7 +47,7 @@ def test__query_data_for_one_field(response, dt, query_api):
     """Should query data and filter it with a field"""
     query_api.query.return_value = response
     influxdb_client = InfluxDBClient(
-        "http://localhost:8086", org="panda", secure=False, token="SECRET"
+        "http://localhost:8086", org="panda", secure=False, token="SECRET", timeout=30
     )
     data = influxdb_client.query_data("topic", 1000, 2000, fields="field")
 
@@ -64,7 +65,7 @@ def test__query_data_for_some_fields(response_multi, dt, query_api):
     query_api.query.return_value = response_multi
 
     influxdb_client = InfluxDBClient(
-        "http://localhost:8086", org="panda", secure=False, token="SECRET"
+        "http://localhost:8086", org="panda", secure=False, token="SECRET", timeout=30
     )
     data = influxdb_client.query_data(
         "topic", 1000, 2000, fields=["field_1", "field_2"]
@@ -86,7 +87,7 @@ def test__query_data_for_all_fields(response_multi, dt, query_api):
     query_api.query.return_value = response_multi
 
     influxdb_client = InfluxDBClient(
-        "http://localhost:8086", org="panda", secure=False, token="SECRET"
+        "http://localhost:8086", org="panda", secure=False, token="SECRET", timeout=30
     )
     data = influxdb_client.query_data("topic", 1000, 2000)
 
