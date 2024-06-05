@@ -48,7 +48,7 @@ def _make_reduct_client(mocker, bucket):
 def test__check_server_available():
     """should check if server is available"""
     with pytest.raises(Exception):
-        _ = ReductStoreClient("http://localhost:8383", "password")
+        _ = ReductStoreClient("http://localhost:8383", "password", 30)
 
 
 @pytest.fixture(name="drift_client")
