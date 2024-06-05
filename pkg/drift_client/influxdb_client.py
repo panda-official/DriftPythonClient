@@ -10,13 +10,7 @@ from influxdb_client import InfluxDBClient as Client
 class InfluxDBClient:
     """Wrapper around `InfluxDBClient`"""
 
-    def __init__(
-        self,
-        uri: str,
-        org: str,
-        token: str,
-        secure: bool,
-    ):
+    def __init__(self, uri: str, org: str, token: str, secure: bool, timeout: float):
         """Create Client for InfluxDB access
 
         :param uri: URI, format: <protocol>://<host>:<port>
@@ -34,6 +28,7 @@ class InfluxDBClient:
             org=org,
             token=token,
             verify_ssl=secure,
+            timeout=int(timeout * 1000),
         )
         self.__query_api = self.__client.query_api()
         self.__bucket = "data"

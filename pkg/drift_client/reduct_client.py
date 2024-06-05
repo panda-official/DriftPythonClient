@@ -1,4 +1,5 @@
 """Reduct Storage client"""
+
 import asyncio
 from asyncio import new_event_loop
 from typing import Tuple, List, Optional, Dict, Iterator
@@ -11,14 +12,14 @@ from drift_client.error import DriftClientError
 class ReductStoreClient:
     """Wrapper around ReductStore client"""
 
-    def __init__(self, url: str, token: str, loop=None):
+    def __init__(self, url: str, token: str, timeout: float, loop=None):
         """
         Args:
             url: ReductStore URL
             token: ReductStore API token
             loop: asyncio event loop
         """
-        self._client = Client(url, api_token=token)
+        self._client = Client(url, api_token=token, timeout=timeout)
         self._bucket = "data"
         self._loop = loop if loop else new_event_loop()
         _ = self._run(self._client.info())  # check connection for fallback to Minio

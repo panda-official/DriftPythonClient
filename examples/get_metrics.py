@@ -11,7 +11,9 @@ logging.basicConfig(level=logging.INFO)
 
 def main():
     # Init
-    drift_client = DriftClient("drift-test-rig.local", os.getenv("DRIFT_PASSWORD"))
+    drift_client = DriftClient(
+        "192.168.1.25", os.getenv("DRIFT_PASSWORD"), timeout=100.0
+    )
     metrics = drift_client.get_metrics(
         "energy-distr-1",
         start=datetime.datetime.now() - datetime.timedelta(minutes=15),

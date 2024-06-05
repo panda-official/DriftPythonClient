@@ -1,4 +1,5 @@
 """Minio Client"""
+
 import pytest
 
 from minio.error import S3Error

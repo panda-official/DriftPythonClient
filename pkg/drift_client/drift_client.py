@@ -54,6 +54,7 @@ class DriftClient:
             influx_port (int): InfluxDB port. Default: 8086,
             mqtt_port (int): MQTT port. Default: 1883
             loop: asyncio loop for integration into async code
+            timeout (float): Timeout for requests. Default: 30 seconds
         """
         if password is None or password == "":
             raise ValueError("Password is required")
@@ -68,6 +69,7 @@ class DriftClient:
         )
         mqtt_port = kwargs["mqtt_port"] if "mqtt_port" in kwargs else 1883
         loop = kwargs["loop"] if "loop" in kwargs else None
+        timeout = kwargs["timeout"] if "timeout" in kwargs else 30
 
         self._mqtt_client = MQTTClient(
             f"mqtt://{host}:{mqtt_port}",
@@ -79,12 +81,14 @@ class DriftClient:
             org,
             password,
             False,
+            timeout,
         )  # TBD!!! --> SSL handling!
 
         try:
             self._blob_storage = ReductStoreClient(
                 f"{('https://' if secure else 'http://')}{host}:{reduct_storage_port}",
                 password,
+                timeout,
                 loop,
             )
             return

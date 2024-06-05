@@ -1,4 +1,5 @@
 """Wrapper around DriftPackage"""
+
 from typing import Optional, Dict
 
 from drift_bytes import Variant, InputBuffer

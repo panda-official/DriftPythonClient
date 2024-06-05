@@ -1,4 +1,5 @@
 """Reduct Storage Client"""
+
 from typing import Optional, List, Any
 
 import pytest
