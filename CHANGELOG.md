@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## Added
+
+- `timeout` option to Client constructor, [PR-39](https://github.com/panda-official/DriftPythonClient/pull/39)
+
 ## 0.9.0 - 2023-12-14
 
 ## Added
