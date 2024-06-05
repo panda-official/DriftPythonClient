@@ -54,7 +54,7 @@ def test__check_server_available():
 @pytest.fixture(name="drift_client")
 def _make_drift_client(reduct_client):
     _ = reduct_client
-    return ReductStoreClient("http://localhost:8383", "password")
+    return ReductStoreClient("http://localhost:8383", "password", 30)
 
 
 def test__check_packages_names_available(bucket, drift_client):

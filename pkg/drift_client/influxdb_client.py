@@ -10,7 +10,9 @@ from influxdb_client import InfluxDBClient as Client
 class InfluxDBClient:
     """Wrapper around `InfluxDBClient`"""
 
-    def __init__(self, uri: str, org: str, token: str, secure: bool, timeout: float):
+    def __init__(
+        self, uri: str, org: str, token: str, secure: bool, timeout: float
+    ):  # pylint: disable=too-many-arguments
         """Create Client for InfluxDB access
 
         :param uri: URI, format: <protocol>://<host>:<port>
