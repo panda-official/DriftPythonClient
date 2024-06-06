@@ -58,6 +58,7 @@ docs = [
     "plantuml-markdown>=3.9.1, <4.0.0",
     "mkdocstrings[python]~=0.22",
     "mkdocs-jupyter~=0.24",
+    "mkdocs-same-dir~=0.1",
 ]
 
 [project.urls]
@@ -69,11 +70,11 @@ Changelog = "https://github.com/panda-official/DriftPythonClient/blob/develop/CH
 
 [tool.pylint]
 max-line-length = 88
-load-plugins="pylint_protobuf"
+load-plugins = "pylint_protobuf"
 good-names = "dt"
 
 [tool.setuptools]
-package-dir = {"" = "pkg"}
+package-dir = { "" = "pkg" }
 
 [tool.setuptools.packages.find]
 where = ["pkg"]
